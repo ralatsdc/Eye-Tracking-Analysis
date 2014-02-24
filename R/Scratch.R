@@ -9,16 +9,18 @@ data.dir <- path-to-the-project-data-folder
 
 inp.files <- list.files.in(dropbox.dir)
 
-for (inp.file in inp.files) {
-  out.file <- paste(data.dir, replace(basename(inp.file), "this", "that"), sep="/")
+data <- list()
+
+n.inp.file <- length(inp.files)
+for (i.inp.file in seq(1, n.inp.files)) {
+  out.file <- paste(data.dir, replace(basename(inp.files[i.inp.file]), "this", "that"), sep="/")
 
   if (!exist(out.file)) {
     data.full <- read(inp.file)
     data.part <- select(data)
-    write(data.part, out.file)
-
+    save(data.part, out.file)
   } else {
-    data.part <- read(out.file)
-
+    load(out.file)
   }
+  data[[i]] <- data.part
 }
