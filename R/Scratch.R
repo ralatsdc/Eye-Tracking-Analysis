@@ -7,20 +7,28 @@
 dropbox.dir <- path-to-your-dropbox-folder
 data.dir <- path-to-the-project-data-folder
 
-inp.files <- list.files.in(dropbox.dir)
+inp.files <- list.files(...)
 
 data <- list()
 
-n.inp.file <- length(inp.files)
-for (i.inp.file in seq(1, n.inp.files)) {
-  out.file <- paste(data.dir, replace(basename(inp.files[i.inp.file]), "this", "that"), sep="/")
+n.file <- length(inp.files)
+for (i.file in seq(1, n.file)) {
+  inp.file <- inp.files[i.file]
 
-  if (!exist(out.file)) {
-    data.full <- read(inp.file)
-    data.part <- select(data)
-    save(data.part, out.file)
+  out.file <- paste(data.dir, sub(".gazedata", ".RData", basename(inp.file)), sep="/")
+  if (!file.exists(out.file)) {
+
+    print(paste("reading:", inp.file))
+    data.full <- read.delim(...)
+
+    data.part <- subset(data.full, ...)
+
+    print(paste("saving:", out.file))
+    save(data.part, ...)
+
   } else {
+    print(paste("loading:", out.file))
     load(out.file)
   }
-  data[[i]] <- data.part
+  data[[i.file]] <- data.part
 }
