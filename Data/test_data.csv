@@ -1,0 +1,4 @@
+subject,trialNumber,RTTime,trialType,SOA,TrialTypeFG,TrialTypeBG,Latency,
+1,1,260747,test,997,Neutral,Incongruent,361,
+1,2,265472,test,200,Congruent,Neutral,460,
+1,3,267725,test,199,Congruent,Incongruent,473,
