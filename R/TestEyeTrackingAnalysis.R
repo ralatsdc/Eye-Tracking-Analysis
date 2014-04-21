@@ -9,7 +9,7 @@
 ### 
 ### See the LICENSE file or http://opensource.org/licenses/MIT.
 
-source('EyeTrackingAnalysis.R')
+source("EyeTrackingAnalysis.R")
 
 eta <- EyeTrackingAnalysis()
 
@@ -20,19 +20,26 @@ test_that("loadData accepts 'csv' files, which exist, only", {
 })
 
 test_that("loadData reads and saves, or loads", {
-
-  ## subject,trialNumber,RTTime,trialType,SOA,TrialTypeFG,TrialTypeBG,Latency,
-  ## 1,1,260747,test,997,Neutral,Incongruent,361,
-  ## 1,2,265472,test,200,Congruent,Neutral,460,
-  ## 1,3,267725,test,199,Congruent,Incongruent,473,
-
   text.file <- "../Data/test_data.csv"
   data.file <- "../Data/test_data.RData"
   if (file.exists(data.file)) {
     file.remove(data.file)
   }
-
   expect_that(eta$loadData(text.file), shows_message(paste("read", text.file, "and saved", data.file)))
   expect_that(eta$loadData(text.file), shows_message(paste("loaded", data.file)))
+})
 
+test_that("loadData reads and saves, or loads", {
+  text.file <- "../Data/test_data.csv"
+  data <- data.frame(
+    subject=as.integer(c(1, 1, 1)),
+    trialNumber=as.integer(c(1, 2, 3)),
+    RTTime=as.integer(c(260747, 265472, 267725)),
+    trialType=c("test", "test", "test"),
+    SOA=as.integer(c(997, 200, 199)),
+    TrialTypeFG=c("Neutral", "Congruent", "Congruent"),
+    TrialTypeBG=c("Incongruent", "Neutral", "Incongruent"),
+    Latency=as.integer(c(361, 460, 473)),
+    X=c(NA, NA, NA))
+  expect_that(eta$loadData(text.file), equals(data))
 })
