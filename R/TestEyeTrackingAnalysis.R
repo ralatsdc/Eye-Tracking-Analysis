@@ -11,12 +11,10 @@
 
 source("EyeTrackingAnalysis.R")
 
-eta <- EyeTrackingAnalysis()
-
 test_that("loadData accepts 'csv' files, which exist, only", {
-  expect_that(eta$loadData("../Data/case_list.dat"), shows_message("../Data/case_list.dat must be a 'csv' file"))
-  expect_that(eta$loadData("case_list.dat"), equals(NULL))
-  expect_that(eta$loadData("../Data/case-list.csv"), shows_message("../Data/case-list.csv does not exist"))
+  expect_that(loadData("../Data/case_list.dat"), shows_message("../Data/case_list.dat must be a 'csv' file"))
+  expect_that(loadData("case_list.dat"), equals(NULL))
+  expect_that(loadData("../Data/case-list.csv"), shows_message("../Data/case-list.csv does not exist"))
 })
 
 test_that("loadData reads and saves, or loads", {
@@ -25,8 +23,8 @@ test_that("loadData reads and saves, or loads", {
   if (file.exists(data.file)) {
     file.remove(data.file)
   }
-  expect_that(eta$loadData(text.file), shows_message(paste("read", text.file, "and saved", data.file)))
-  expect_that(eta$loadData(text.file), shows_message(paste("loaded", data.file)))
+  expect_that(loadData(text.file), shows_message(paste("read", text.file, "and saved", data.file)))
+  expect_that(loadData(text.file), shows_message(paste("loaded", data.file)))
 })
 
 test_that("loadData reads and saves, or loads", {
@@ -41,5 +39,5 @@ test_that("loadData reads and saves, or loads", {
     TrialTypeBG=c("Incongruent", "Neutral", "Incongruent"),
     Latency=as.integer(c(361, 460, 473)),
     X=c(NA, NA, NA))
-  expect_that(eta$loadData(text.file), equals(data))
+  expect_that(loadData(text.file), equals(data))
 })
