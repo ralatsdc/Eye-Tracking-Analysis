@@ -9,11 +9,11 @@
 ### 
 ### See the LICENSE file or http://opensource.org/licenses/MIT.
 
-kobe.file <- "./Data/Kobe-Social-Cue-1/case_data.csv"
-ucsb.file <- "./Data/UCSB-Social-Cue-1/case_data.csv"
-
-selectData <- function() {
-
+selectData <- function(kobe.file="./Data/Kobe-Social-Cue-1/case_data.csv",
+                       ucsb.file="./Data/UCSB-Social-Cue-1/case_data.csv") {
+  ## Selects the required columns from the Kobe and UCSB social cue
+  ## data.
+  
   ## The Kobe data set contains the following fields, after processing:
   ## 
   ## subject
@@ -114,9 +114,9 @@ selectData <- function() {
   ## - TrialName
   ## + TrialTypeBG
   ## + TrialTypeFG
-
   ucsb.data <- subset(
     loadData(ucsb.file),
+    subset=TRUE,
     select=c(
       Subject, Session, cueDur, cueSlide.RT, cueSlide.RTTime,
       targetSlide.RT, targetSlide.RTTime, TrialTypeBG, TrialTypeFG))

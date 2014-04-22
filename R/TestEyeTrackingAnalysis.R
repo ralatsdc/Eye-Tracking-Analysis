@@ -27,7 +27,7 @@ test_that("loadData reads and saves, or loads", {
   expect_that(loadData(text.file), shows_message(paste("loaded", data.file)))
 })
 
-test_that("loadData reads and saves, or loads", {
+test_that("loadData loads the data", {
   text.file <- "../Data/test_data.csv"
   data <- data.frame(
     subject=as.integer(c(1, 1, 1)),
@@ -40,4 +40,76 @@ test_that("loadData reads and saves, or loads", {
     Latency=as.integer(c(361, 460, 473)),
     X=c(NA, NA, NA))
   expect_that(loadData(text.file), equals(data))
+})
+
+test_that("selectData selects the first and last row", {
+
+  data <- selectData(kobe.file="../Data/Kobe-Social-Cue-1/case_data.csv",
+                     ucsb.file="../Data/UCSB-Social-Cue-1/case_data.csv")
+
+  i.kobe <- 1
+  expect_that(data$kobe$subject[i.kobe], equals(1))
+  expect_that(data$kobe$trialNumber[i.kobe], equals(1))
+  expect_that(data$kobe$RTTime[i.kobe], equals(260747))
+  expect_that(data$kobe$trialType[i.kobe],
+              equals(factor("test", levels=c("catch", "test"))))
+  expect_that(data$kobe$SOA[i.kobe], equals(997))
+  expect_that(data$kobe$TrialTypeFG[i.kobe],
+              equals(factor("Neutral", levels=c("catch", "Congruent", "Incongruent", "Neutral"))))
+  expect_that(data$kobe$TrialTypeBG[i.kobe],
+              equals(factor("Incongruent", levels=c("catch", "Congruent", "Incongruent", "Neutral"))))
+  expect_that(data$kobe$Latency[i.kobe], equals(c(361)))
+
+  i.kobe <- 19723
+  expect_that(data$kobe$subject[i.kobe], equals(2))
+  expect_that(data$kobe$trialNumber[i.kobe], equals(520))
+  expect_that(data$kobe$RTTime[i.kobe], equals(1758526))
+  expect_that(data$kobe$trialType[i.kobe],
+              equals(factor("test", levels=c("catch", "test"))))
+  expect_that(data$kobe$SOA[i.kobe], equals(199))
+  expect_that(data$kobe$TrialTypeFG[i.kobe],
+              equals(factor("Incongruent", levels=c("catch", "Congruent", "Incongruent", "Neutral"))))
+  expect_that(data$kobe$TrialTypeBG[i.kobe],
+              equals(factor("Neutral", levels=c("catch", "Congruent", "Incongruent", "Neutral"))))
+  expect_that(data$kobe$Latency[i.kobe], equals(c(329)))
+
+  i.ucsb <- 1
+  expect_that(data$ucsb$Subject[i.ucsb], equals(1))
+  expect_that(data$ucsb$Session[i.ucsb], equals(1))
+  expect_that(data$ucsb$cueDur[i.ucsb], equals(1000))
+  expect_that(data$ucsb$cueSlide.RT[i.ucsb], equals(0))
+  expect_that(data$ucsb$cueSlide.RTTime[i.ucsb], equals(0))
+  expect_that(data$ucsb$targetSlide.RT[i.ucsb], equals(0))
+  expect_that(data$ucsb$targetSlide.RTTime[i.ucsb], equals(0))
+  expect_that(data$ucsb$TrialTypeBG[i.ucsb],
+              equals(factor("Incongruent", levels=c("catch", "Congruent", "Incongruent"))))
+  expect_that(data$ucsb$TrialTypeFG[i.ucsb],
+              equals(factor("Congruent", levels=c("catch", "Congruent", "Incongruent"))))
+
+  i.ucsb <- 1
+  expect_that(data$ucsb$Subject[i.ucsb], equals(1))
+  expect_that(data$ucsb$Session[i.ucsb], equals(1))
+  expect_that(data$ucsb$cueDur[i.ucsb], equals(1000))
+  expect_that(data$ucsb$cueSlide.RT[i.ucsb], equals(0))
+  expect_that(data$ucsb$cueSlide.RTTime[i.ucsb], equals(0))
+  expect_that(data$ucsb$targetSlide.RT[i.ucsb], equals(0))
+  expect_that(data$ucsb$targetSlide.RTTime[i.ucsb], equals(0))
+  expect_that(data$ucsb$TrialTypeBG[i.ucsb],
+              equals(factor("Incongruent", levels=c("catch", "Congruent", "Incongruent"))))
+  expect_that(data$ucsb$TrialTypeFG[i.ucsb],
+              equals(factor("Congruent", levels=c("catch", "Congruent", "Incongruent"))))
+
+  i.ucsb <- 12150
+  expect_that(data$ucsb$Subject[i.ucsb], equals(1))
+  expect_that(data$ucsb$Session[i.ucsb], equals(1))
+  expect_that(data$ucsb$cueDur[i.ucsb], equals(200))
+  expect_that(data$ucsb$cueSlide.RT[i.ucsb], equals(0))
+  expect_that(data$ucsb$cueSlide.RTTime[i.ucsb], equals(0))
+  expect_that(data$ucsb$targetSlide.RT[i.ucsb], equals(284))
+  expect_that(data$ucsb$targetSlide.RTTime[i.ucsb], equals(1562321))
+  expect_that(data$ucsb$TrialTypeBG[i.ucsb],
+              equals(factor("Incongruent", levels=c("catch", "Congruent", "Incongruent"))))
+  expect_that(data$ucsb$TrialTypeFG[i.ucsb],
+              equals(factor("Congruent", levels=c("catch", "Congruent", "Incongruent"))))
+
 })
