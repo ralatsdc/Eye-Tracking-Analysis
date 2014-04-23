@@ -113,3 +113,21 @@ test_that("selectData selects the first and last row", {
               equals(factor("Congruent", levels=c("catch", "Congruent", "Incongruent"))))
 
 })
+
+test_that("assignTreatment assigns the treatment", {
+
+  data <- selectData(kobe.file="../Data/Kobe-Social-Cue-1/case_data.csv",
+                     ucsb.file="../Data/UCSB-Social-Cue-1/case_data.csv")
+  data$ucsb <- assignTreatment(data$ucsb,
+                               rand.file="../Data/UCSB-Social-Cue-1/randomization.csv")
+  
+  expect_that(unique(data$ucsb$Treatment[data$ucsb$Subject == 1 & data$ucsb$Session == 1]),
+              equals(factor("Oxytocin", levels=c("Oxytocin", "Placebo"))))
+  expect_that(unique(data$ucsb$Treatment[data$ucsb$Subject == 10 & data$ucsb$Session == 1]),
+              equals(factor("Placebo", levels=c("Oxytocin", "Placebo"))))
+  expect_that(unique(data$ucsb$Treatment[data$ucsb$Subject == 12 & data$ucsb$Session == 1]),
+              equals(factor("Placebo", levels=c("Oxytocin", "Placebo"))))
+  expect_that(unique(data$ucsb$Treatment[data$ucsb$Subject == 82 & data$ucsb$Session == 1]),
+              equals(factor("Oxytocin", levels=c("Oxytocin", "Placebo"))))
+
+})
