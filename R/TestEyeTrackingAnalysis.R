@@ -45,7 +45,8 @@ test_that("loadData loads the data", {
 test_that("selectData selects the first and last row", {
 
   data <- selectData(kobe.file="../Data/Kobe-Social-Cue-1/case_data.csv",
-                     ucsb.file="../Data/UCSB-Social-Cue-1/case_data.csv")
+                     ucsb.file.1="../Data/UCSB-Social-Cue-1/case_data.csv",
+                     ucsb.file.2="../Data/UCSB-Social-Cue-2/case_data.csv")
 
   i.kobe <- 1
   expect_that(data$kobe$subject[i.kobe], equals(1))
@@ -86,19 +87,6 @@ test_that("selectData selects the first and last row", {
   expect_that(data$ucsb$TrialTypeFG[i.ucsb],
               equals(factor("Congruent", levels=c("catch", "Congruent", "Incongruent"))))
 
-  i.ucsb <- 1
-  expect_that(data$ucsb$Subject[i.ucsb], equals(1))
-  expect_that(data$ucsb$Session[i.ucsb], equals(1))
-  expect_that(data$ucsb$cueDur[i.ucsb], equals(1000))
-  expect_that(data$ucsb$cueSlide.RT[i.ucsb], equals(0))
-  expect_that(data$ucsb$cueSlide.RTTime[i.ucsb], equals(0))
-  expect_that(data$ucsb$targetSlide.RT[i.ucsb], equals(0))
-  expect_that(data$ucsb$targetSlide.RTTime[i.ucsb], equals(0))
-  expect_that(data$ucsb$TrialTypeBG[i.ucsb],
-              equals(factor("Incongruent", levels=c("catch", "Congruent", "Incongruent"))))
-  expect_that(data$ucsb$TrialTypeFG[i.ucsb],
-              equals(factor("Congruent", levels=c("catch", "Congruent", "Incongruent"))))
-
   i.ucsb <- 12150
   expect_that(data$ucsb$Subject[i.ucsb], equals(1))
   expect_that(data$ucsb$Session[i.ucsb], equals(1))
@@ -112,12 +100,39 @@ test_that("selectData selects the first and last row", {
   expect_that(data$ucsb$TrialTypeFG[i.ucsb],
               equals(factor("Congruent", levels=c("catch", "Congruent", "Incongruent"))))
 
+  i.ucsb <- 12151
+  expect_that(data$ucsb$Subject[i.ucsb], equals(1))
+  expect_that(data$ucsb$Session[i.ucsb], equals(2))
+  expect_that(data$ucsb$cueDur[i.ucsb], equals(1000))
+  expect_that(data$ucsb$cueSlide.RT[i.ucsb], equals(0))
+  expect_that(data$ucsb$cueSlide.RTTime[i.ucsb], equals(0))
+  expect_that(data$ucsb$targetSlide.RT[i.ucsb], equals(705))
+  expect_that(data$ucsb$targetSlide.RTTime[i.ucsb], equals(59982))
+  expect_that(data$ucsb$TrialTypeBG[i.ucsb],
+              equals(factor("Congruent", levels=c("catch", "Congruent", "Incongruent"))))
+  expect_that(data$ucsb$TrialTypeFG[i.ucsb],
+              equals(factor("Congruent", levels=c("catch", "Congruent", "Incongruent"))))
+
+  i.ucsb <- 26190
+  expect_that(data$ucsb$Subject[i.ucsb], equals(82))
+  expect_that(data$ucsb$Session[i.ucsb], equals(2))
+  expect_that(data$ucsb$cueDur[i.ucsb], equals(1000))
+  expect_that(data$ucsb$cueSlide.RT[i.ucsb], equals(0))
+  expect_that(data$ucsb$cueSlide.RTTime[i.ucsb], equals(0))
+  expect_that(data$ucsb$targetSlide.RT[i.ucsb], equals(392))
+  expect_that(data$ucsb$targetSlide.RTTime[i.ucsb], equals(1526721))
+  expect_that(data$ucsb$TrialTypeBG[i.ucsb],
+              equals(factor("Congruent", levels=c("catch", "Congruent", "Incongruent"))))
+  expect_that(data$ucsb$TrialTypeFG[i.ucsb],
+              equals(factor("Incongruent", levels=c("catch", "Congruent", "Incongruent"))))
+
 })
 
 test_that("assignTreatment assigns the treatment", {
 
   data <- selectData(kobe.file="../Data/Kobe-Social-Cue-1/case_data.csv",
-                     ucsb.file="../Data/UCSB-Social-Cue-1/case_data.csv")
+                     ucsb.file.1="../Data/UCSB-Social-Cue-1/case_data.csv",
+                     ucsb.file.2="../Data/UCSB-Social-Cue-2/case_data.csv")
   data$ucsb <- assignTreatment(data$ucsb,
                                rand.file="../Data/UCSB-Social-Cue-1/randomization.csv")
   

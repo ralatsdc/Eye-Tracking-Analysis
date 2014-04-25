@@ -74,7 +74,8 @@ assignTreatment <- function(ucsb.data,
 }
 
 selectData <- function(kobe.file="./Data/Kobe-Social-Cue-1/case_data.csv",
-                       ucsb.file="./Data/UCSB-Social-Cue-1/case_data.csv") {
+                       ucsb.file.1="./Data/UCSB-Social-Cue-1/case_data.csv",
+                       ucsb.file.2="./Data/UCSB-Social-Cue-2/case_data.csv") {
   ## Selects the required columns from the Kobe and UCSB social cue
   ## data.
   
@@ -90,7 +91,7 @@ selectData <- function(kobe.file="./Data/Kobe-Social-Cue-1/case_data.csv",
   ## Latency
   kobe.data <- loadData(kobe.file)
 
-  ## The UCSB data set contains the following fields. Those marked with
+  ## The UCSB data sets contains the following fields. Those marked with
   ## a "+" are selected, those marked with a "-" are not selected.
   ##
   ## - ExperimentName
@@ -178,13 +179,20 @@ selectData <- function(kobe.file="./Data/Kobe-Social-Cue-1/case_data.csv",
   ## - TrialName
   ## + TrialTypeBG
   ## + TrialTypeFG
-  ucsb.data <- subset(
-    loadData(ucsb.file),
+  ucsb.data.1 <- subset(
+    loadData(ucsb.file.1),
     subset=TRUE,
     select=c(
       Subject, Session, cueDur, cueSlide.RT, cueSlide.RTTime,
       targetSlide.RT, targetSlide.RTTime, TrialTypeBG, TrialTypeFG))
-
+  ucsb.data.2 <- subset(
+    loadData(ucsb.file.2),
+    subset=TRUE,
+    select=c(
+      Subject, Session, cueDur, cueSlide.RT, cueSlide.RTTime,
+      targetSlide.RT, targetSlide.RTTime, TrialTypeBG, TrialTypeFG))
+  ucsb.data <- rbind(ucsb.data.1, ucsb.data.2)
+  
   return(list(kobe=kobe.data, ucsb=ucsb.data))
 }
   
