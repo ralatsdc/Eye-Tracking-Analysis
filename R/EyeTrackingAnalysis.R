@@ -9,25 +9,21 @@
 ### 
 ### See the LICENSE file or http://opensource.org/licenses/MIT.
 
-assignTreatment <- function(ucsb.data,
-                            rand.file="./Data/UCSB-Social-Cue-1/randomization.csv") {
-
-  ## Ensure the data frame contains UCSB data
-  if (!identical(names(ucsb.data),
-                 c("Subject", "Session", "cueDur", "cueSlide.RT",
-                   "cueSlide.RTTime", "targetSlide.RT",
-                   "targetSlide.RTTime", "TrialTypeBG",
-                   "TrialTypeFG"))) { 
-    message("Unexpected names for UCSB data")
-    return(ucsb.data)
-  }
-
+assignTreatment <- function(data,
+                            rand.file="./Data/treatment.csv") {
+  ## Assigns treatment data to Kobe and UCSB data based on subject,
+  ## session, and nation.
+  
   ## Ensure two and only two sessions equal to one and two present in
-  ## the UCSB data, since session is used as index below
+  ## the Kobe and UCSB data, since session is used as index below
   session.nmbrs <- c(1, 2)
-  if (length(setdiff(unique(ucsb.data$Session), session.nmbrs)) > 0) {
+  if (length(setdiff(unique(data$kobe$session), session.nmbrs)) > 0) {
+    message("Unexpected session numbers in Kobe data")
+    return(data)
+  }
+  if (length(setdiff(unique(data$ucsb$Session), session.nmbrs)) > 0) {
     message("Unexpected session numbers in UCSB data")
-    return(ucsb.data)
+    return(data)
   }
 
   ## Load the treatment assignment data
@@ -37,43 +33,69 @@ assignTreatment <- function(ucsb.data,
   ## session names
   session.names <- c("Session.1", "Session.2")
   if (length(setdiff(session.names, names(rand.data))) > 0) {
-    message("Unexpected names for randomization sessions")
-    return(ucsb.data)
+    message("Unexpected names for sessions")
+    return(data)
   }
 
   ## Ensure the treatment assignment data frame session factors have
   ## identical levels
   if (!identical(levels(rand.data$Session.1), levels(rand.data$Session.2))) {
     message("Levels for session one and two factors differ")
-    return(ucsb.data)
+    return(data)
   }
   
-  ## Column bind a treatment factor to the UCSB data frame
-  ucsb.data <- cbind(ucsb.data, Treatment=factor("", levels(rand.data$Session.1)))
+  ## Column bind a treatment factor to the Kobe and UCSB data frame
+  data$kobe <- cbind(data$kobe, Treatment=factor("", levels(rand.data$Session.1)))
+  data$ucsb <- cbind(data$ucsb, Treatment=factor("", levels(rand.data$Session.1)))
 
-  ## Consider each unique UCSB subject
-  for (unq.subject in unique(ucsb.data$Subject)) {
+  ## Consider each unique Kobe subject
+  for (unq.subject in unique(data$kobe$subject)) {
 
     ## Ensure that the current unique subject is found once and only
     ## once in the treatment assignment data
-    if (sum(rand.data$Subject == unq.subject) > 1) {
+    rand.idx <- rand.data$Subject == unq.subject & rand.data$Nation == "JP"
+    if (sum(rand.idx) > 1) {
       message(sprintf("Found more than one entry for subject %d", unq.subject))
-      return(ucsb.data)
+      return(data)
     }
 
-    ## Consider each unique UCSB session
-    for (unq.session in unique(ucsb.data$Session)) {
+    ## Consider each unique Kobe session
+    for (unq.session in unique(data$kobe$session)) {
 
       ## Assign the treatment for the current unique subject and
       ## session
-      cur.treatment <- rand.data[[session.names[unq.session]]][rand.data$Subject == unq.subject]
-      ucsb.data$Treatment[ucsb.data$Subject==unq.subject & ucsb.data$Session==unq.session] <- cur.treatment
-     }      
+      cur.treatment <- rand.data[[session.names[unq.session]]][rand.idx]
+      data.idx <- data$kobe$subject == unq.subject & data$kobe$session == unq.session
+      data$kobe$Treatment[data.idx] <- cur.treatment
+     }
   }
-  ucsb.data
+
+  ## Consider each unique UCSB subject
+  for (unq.subject in unique(data$ucsb$Subject)) {
+
+    ## Ensure that the current unique subject is found once and only
+    ## once in the treatment assignment data
+    rand.idx <- rand.data$Subject == unq.subject & rand.data$Nation == "US"
+    if (sum(rand.idx) > 1) {
+      message(sprintf("Found more than one entry for subject %d", unq.subject))
+      return(data)
+    }
+
+    ## Consider each unique UCSB session
+    for (unq.session in unique(data$ucsb$Session)) {
+
+      ## Assign the treatment for the current unique subject and
+      ## session
+      cur.treatment <- rand.data[[session.names[unq.session]]][rand.idx]
+      data.idx <- data$ucsb$Subject == unq.subject & data$ucsb$Session == unq.session
+      data$ucsb$Treatment[data.idx] <- cur.treatment
+     }
+  }
+  data
 }
 
-selectData <- function(kobe.file="./Data/Kobe-Social-Cue-1/case_data.csv",
+selectData <- function(kobe.file.1="./Data/Kobe-Social-Cue-1/case_data.csv",
+                       kobe.file.2="./Data/Kobe-Social-Cue-2/case_data.csv",
                        ucsb.file.1="./Data/UCSB-Social-Cue-1/case_data.csv",
                        ucsb.file.2="./Data/UCSB-Social-Cue-2/case_data.csv") {
   ## Selects the required columns from the Kobe and UCSB social cue
@@ -82,6 +104,7 @@ selectData <- function(kobe.file="./Data/Kobe-Social-Cue-1/case_data.csv",
   ## The Kobe data set contains the following fields, after processing:
   ## 
   ## subject
+  ## session
   ## trialNumber
   ## RTTime
   ## trialType
@@ -89,7 +112,9 @@ selectData <- function(kobe.file="./Data/Kobe-Social-Cue-1/case_data.csv",
   ## TrialTypeFG
   ## TrialTypeBG
   ## Latency
-  kobe.data <- loadData(kobe.file)
+  kobe.data.1 <- loadData(kobe.file.1)
+  kobe.data.2 <- loadData(kobe.file.2)
+  kobe.data <- rbind(kobe.data.1, kobe.data.2)
 
   ## The UCSB data sets contains the following fields. Those marked with
   ## a "+" are selected, those marked with a "-" are not selected.
@@ -193,7 +218,7 @@ selectData <- function(kobe.file="./Data/Kobe-Social-Cue-1/case_data.csv",
       targetSlide.RT, targetSlide.RTTime, TrialTypeBG, TrialTypeFG))
   ucsb.data <- rbind(ucsb.data.1, ucsb.data.2)
   
-  return(list(kobe=kobe.data, ucsb=ucsb.data))
+  list(kobe=kobe.data, ucsb=ucsb.data)
 }
   
 loadData <- function(text.file) {

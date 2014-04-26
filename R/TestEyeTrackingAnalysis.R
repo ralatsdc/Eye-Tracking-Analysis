@@ -44,12 +44,14 @@ test_that("loadData loads the data", {
 
 test_that("selectData selects the first and last row", {
 
-  data <- selectData(kobe.file="../Data/Kobe-Social-Cue-1/case_data.csv",
+  data <- selectData(kobe.file.1="../Data/Kobe-Social-Cue-1/case_data.csv",
+                     kobe.file.2="../Data/Kobe-Social-Cue-2/case_data.csv",
                      ucsb.file.1="../Data/UCSB-Social-Cue-1/case_data.csv",
                      ucsb.file.2="../Data/UCSB-Social-Cue-2/case_data.csv")
 
   i.kobe <- 1
   expect_that(data$kobe$subject[i.kobe], equals(1))
+  expect_that(data$kobe$session[i.kobe], equals(1))
   expect_that(data$kobe$trialNumber[i.kobe], equals(1))
   expect_that(data$kobe$RTTime[i.kobe], equals(260747))
   expect_that(data$kobe$trialType[i.kobe],
@@ -63,6 +65,7 @@ test_that("selectData selects the first and last row", {
 
   i.kobe <- 19723
   expect_that(data$kobe$subject[i.kobe], equals(2))
+  expect_that(data$kobe$session[i.kobe], equals(1))
   expect_that(data$kobe$trialNumber[i.kobe], equals(520))
   expect_that(data$kobe$RTTime[i.kobe], equals(1758526))
   expect_that(data$kobe$trialType[i.kobe],
@@ -73,6 +76,34 @@ test_that("selectData selects the first and last row", {
   expect_that(data$kobe$TrialTypeBG[i.kobe],
               equals(factor("Neutral", levels=c("catch", "Congruent", "Incongruent", "Neutral"))))
   expect_that(data$kobe$Latency[i.kobe], equals(c(329)))
+
+  i.kobe <- 19724
+  expect_that(data$kobe$subject[i.kobe], equals(1))
+  expect_that(data$kobe$session[i.kobe], equals(2))
+  expect_that(data$kobe$trialNumber[i.kobe], equals(1))
+  expect_that(data$kobe$RTTime[i.kobe], equals(3449742))
+  expect_that(data$kobe$trialType[i.kobe],
+              equals(factor("test", levels=c("catch", "test"))))
+  expect_that(data$kobe$SOA[i.kobe], equals(598))
+  expect_that(data$kobe$TrialTypeFG[i.kobe],
+              equals(factor("Incongruent", levels=c("catch", "Congruent", "Incongruent", "Neutral"))))
+  expect_that(data$kobe$TrialTypeBG[i.kobe],
+              equals(factor("Incongruent", levels=c("catch", "Congruent", "Incongruent", "Neutral"))))
+  expect_that(data$kobe$Latency[i.kobe], equals(c(0)))
+
+  i.kobe <- 41482
+  expect_that(data$kobe$subject[i.kobe], equals(145))
+  expect_that(data$kobe$session[i.kobe], equals(2))
+  expect_that(data$kobe$trialNumber[i.kobe], equals(520))
+  expect_that(data$kobe$RTTime[i.kobe], equals(4861299))
+  expect_that(data$kobe$trialType[i.kobe],
+              equals(factor("test", levels=c("catch", "test"))))
+  expect_that(data$kobe$SOA[i.kobe], equals(1017))
+  expect_that(data$kobe$TrialTypeFG[i.kobe],
+              equals(factor("Incongruent", levels=c("catch", "Congruent", "Incongruent", "Neutral"))))
+  expect_that(data$kobe$TrialTypeBG[i.kobe],
+              equals(factor("Neutral", levels=c("catch", "Congruent", "Incongruent", "Neutral"))))
+  expect_that(data$kobe$Latency[i.kobe], equals(c(254)))
 
   i.ucsb <- 1
   expect_that(data$ucsb$Subject[i.ucsb], equals(1))
@@ -130,19 +161,29 @@ test_that("selectData selects the first and last row", {
 
 test_that("assignTreatment assigns the treatment", {
 
-  data <- selectData(kobe.file="../Data/Kobe-Social-Cue-1/case_data.csv",
+  data <- selectData(kobe.file.1="../Data/Kobe-Social-Cue-1/case_data.csv",
+                     kobe.file.2="../Data/Kobe-Social-Cue-2/case_data.csv",
                      ucsb.file.1="../Data/UCSB-Social-Cue-1/case_data.csv",
                      ucsb.file.2="../Data/UCSB-Social-Cue-2/case_data.csv")
-  data$ucsb <- assignTreatment(data$ucsb,
-                               rand.file="../Data/UCSB-Social-Cue-1/randomization.csv")
+  data <- assignTreatment(data,
+                          rand.file="../Data/treatment.csv")
   
-  expect_that(unique(data$ucsb$Treatment[data$ucsb$Subject == 1 & data$ucsb$Session == 1]),
-              equals(factor("Oxytocin", levels=c("Oxytocin", "Placebo"))))
   expect_that(unique(data$ucsb$Treatment[data$ucsb$Subject == 10 & data$ucsb$Session == 1]),
               equals(factor("Placebo", levels=c("Oxytocin", "Placebo"))))
-  expect_that(unique(data$ucsb$Treatment[data$ucsb$Subject == 12 & data$ucsb$Session == 1]),
-              equals(factor("Placebo", levels=c("Oxytocin", "Placebo"))))
+  expect_that(unique(data$ucsb$Treatment[data$ucsb$Subject == 10 & data$ucsb$Session == 2]),
+              equals(factor("Oxytocin", levels=c("Oxytocin", "Placebo"))))
   expect_that(unique(data$ucsb$Treatment[data$ucsb$Subject == 82 & data$ucsb$Session == 1]),
               equals(factor("Oxytocin", levels=c("Oxytocin", "Placebo"))))
+  expect_that(unique(data$ucsb$Treatment[data$ucsb$Subject == 82 & data$ucsb$Session == 2]),
+              equals(factor("Placebo", levels=c("Oxytocin", "Placebo"))))
+
+  expect_that(unique(data$kobe$Treatment[data$kobe$subject == 101 & data$kobe$session == 1]),
+              equals(factor("Placebo", levels=c("Oxytocin", "Placebo"))))
+  expect_that(unique(data$kobe$Treatment[data$kobe$subject == 101 & data$kobe$session == 2]),
+              equals(factor("Oxytocin", levels=c("Oxytocin", "Placebo"))))
+  expect_that(unique(data$kobe$Treatment[data$kobe$subject == 145 & data$kobe$session == 1]),
+              equals(factor("Oxytocin", levels=c("Oxytocin", "Placebo"))))
+  expect_that(unique(data$kobe$Treatment[data$kobe$subject == 145 & data$kobe$session == 2]),
+              equals(factor("Placebo", levels=c("Oxytocin", "Placebo"))))
 
 })
