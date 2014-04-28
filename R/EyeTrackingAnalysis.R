@@ -17,7 +17,7 @@ assignTreatment <- function(data,
   ## Ensure two and only two sessions equal to one and two present in
   ## the Kobe and UCSB data, since session is used as index below
   session.nmbrs <- c(1, 2)
-  if (length(setdiff(unique(data$kobe$session), session.nmbrs)) > 0) {
+  if (length(setdiff(unique(data$kobe$Session), session.nmbrs)) > 0) {
     message("Unexpected session numbers in Kobe data")
     return(data)
   }
@@ -49,7 +49,7 @@ assignTreatment <- function(data,
   data$ucsb <- cbind(data$ucsb, Treatment=factor("", levels(rand.data$Session.1)))
 
   ## Consider each unique Kobe subject
-  for (unq.subject in unique(data$kobe$subject)) {
+  for (unq.subject in unique(data$kobe$Subject)) {
 
     ## Ensure that the current unique subject is found once and only
     ## once in the treatment assignment data
@@ -60,12 +60,12 @@ assignTreatment <- function(data,
     }
 
     ## Consider each unique Kobe session
-    for (unq.session in unique(data$kobe$session)) {
+    for (unq.session in unique(data$kobe$Session)) {
 
       ## Assign the treatment for the current unique subject and
       ## session
       cur.treatment <- rand.data[[session.names[unq.session]]][rand.idx]
-      data.idx <- data$kobe$subject == unq.subject & data$kobe$session == unq.session
+      data.idx <- data$kobe$Subject == unq.subject & data$kobe$Session == unq.session
       data$kobe$Treatment[data.idx] <- cur.treatment
      }
   }
@@ -103,17 +103,29 @@ selectData <- function(kobe.file.1="./Data/Kobe-Social-Cue-1/case_data.csv",
   
   ## The Kobe data set contains the following fields, after processing:
   ## 
-  ## subject
-  ## session
-  ## trialNumber
-  ## RTTime
-  ## trialType
-  ## SOA
-  ## TrialTypeFG
-  ## TrialTypeBG
-  ## Latency
-  kobe.data.1 <- loadData(kobe.file.1)
-  kobe.data.2 <- loadData(kobe.file.2)
+  ## + subject: renamed "Subject"
+  ## + session: renamed "Session"
+  ## - trialNumber: dropped
+  ## - RTTime: dropped
+  ## + trialType: renamed TrialType
+  ## + SOA
+  ## + TrialTypeFG
+  ## + TrialTypeBG
+  ## + Latency
+  kobe.data.1 <- subset(
+    loadData(kobe.file.1),
+    subset=TRUE,
+    select=c(
+      subject, session, trialType, SOA, TrialTypeFG, TrialTypeBG, Latency))
+  colnames(kobe.data.1) <- c(
+    "Subject", "Session", "TrialType", "SOA", "TrialTypeFG", "TrialTypeBG", "Latency")
+  kobe.data.2 <- subset(
+    loadData(kobe.file.2),
+    subset=TRUE,
+    select=c(
+      subject, session, trialType, SOA, TrialTypeFG, TrialTypeBG, Latency))
+  colnames(kobe.data.2) <- c(
+    "Subject", "Session", "TrialType", "SOA", "TrialTypeFG", "TrialTypeBG", "Latency")
   kobe.data <- rbind(kobe.data.1, kobe.data.2)
 
   ## The UCSB data sets contains the following fields. Those marked with
@@ -156,7 +168,7 @@ selectData <- function(kobe.file.1="./Data/Kobe-Social-Cue-1/case_data.csv",
   ## - ConditionSelectorCatch
   ## - ConditionSelectorCatchPrac
   ## - correctResponse
-  ## + cueDur
+  ## + cueDur: renamed "CueDur"
   ## - cueImage1
   ## - cueImage2
   ## - cueImage3
@@ -172,8 +184,8 @@ selectData <- function(kobe.file.1="./Data/Kobe-Social-Cue-1/case_data.csv",
   ## - cueSlide.OnsetTime
   ## - cueSlide.OnsetToOnsetTime
   ## - cueSlide.RESP
-  ## + cueSlide.RT
-  ## + cueSlide.RTTime
+  ## - cueSlide.RT
+  ## - cueSlide.RTTime
   ## - DirectionBG
   ## - DirectionFG
   ## - face
@@ -197,25 +209,27 @@ selectData <- function(kobe.file.1="./Data/Kobe-Social-Cue-1/case_data.csv",
   ## - targetSlide.OnsetToOnsetTime
   ## - targetSlide.RESP
   ## + targetSlide.RT
-  ## + targetSlide.RTTime
+  ## - targetSlide.RTTime
   ## - tgtDur
   ## - tgtLeft
   ## - tgtRight
-  ## - TrialName
+  ## + TrialName
   ## + TrialTypeBG
   ## + TrialTypeFG
   ucsb.data.1 <- subset(
     loadData(ucsb.file.1),
     subset=TRUE,
     select=c(
-      Subject, Session, cueDur, cueSlide.RT, cueSlide.RTTime,
-      targetSlide.RT, targetSlide.RTTime, TrialTypeBG, TrialTypeFG))
+      Subject, Session, TrialName, cueDur, TrialTypeBG, TrialTypeFG, targetSlide.RT))
+  colnames(ucsb.data.1) <- c(
+    "Subject", "Session", "TrialName", "CueDur", "TrialTypeBG", "TrialTypeFG", "targetSlide.RT")
   ucsb.data.2 <- subset(
     loadData(ucsb.file.2),
     subset=TRUE,
     select=c(
-      Subject, Session, cueDur, cueSlide.RT, cueSlide.RTTime,
-      targetSlide.RT, targetSlide.RTTime, TrialTypeBG, TrialTypeFG))
+      Subject, Session, TrialName, cueDur, TrialTypeBG, TrialTypeFG, targetSlide.RT))
+  colnames(ucsb.data.2) <- c(
+    "Subject", "Session", "TrialName", "CueDur", "TrialTypeBG", "TrialTypeFG", "targetSlide.RT")
   ucsb.data <- rbind(ucsb.data.1, ucsb.data.2)
   
   list(kobe=kobe.data, ucsb=ucsb.data)

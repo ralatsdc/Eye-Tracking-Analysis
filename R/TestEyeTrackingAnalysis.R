@@ -50,11 +50,9 @@ test_that("selectData selects the first and last row", {
                      ucsb.file.2="../Data/UCSB-Social-Cue-2/case_data.csv")
 
   i.kobe <- 1
-  expect_that(data$kobe$subject[i.kobe], equals(1))
-  expect_that(data$kobe$session[i.kobe], equals(1))
-  expect_that(data$kobe$trialNumber[i.kobe], equals(1))
-  expect_that(data$kobe$RTTime[i.kobe], equals(260747))
-  expect_that(data$kobe$trialType[i.kobe],
+  expect_that(data$kobe$Subject[i.kobe], equals(1))
+  expect_that(data$kobe$Session[i.kobe], equals(1))
+  expect_that(data$kobe$TrialType[i.kobe],
               equals(factor("test", levels=c("catch", "test"))))
   expect_that(data$kobe$SOA[i.kobe], equals(997))
   expect_that(data$kobe$TrialTypeFG[i.kobe],
@@ -64,11 +62,9 @@ test_that("selectData selects the first and last row", {
   expect_that(data$kobe$Latency[i.kobe], equals(c(361)))
 
   i.kobe <- 19723
-  expect_that(data$kobe$subject[i.kobe], equals(2))
-  expect_that(data$kobe$session[i.kobe], equals(1))
-  expect_that(data$kobe$trialNumber[i.kobe], equals(520))
-  expect_that(data$kobe$RTTime[i.kobe], equals(1758526))
-  expect_that(data$kobe$trialType[i.kobe],
+  expect_that(data$kobe$Subject[i.kobe], equals(2))
+  expect_that(data$kobe$Session[i.kobe], equals(1))
+  expect_that(data$kobe$TrialType[i.kobe],
               equals(factor("test", levels=c("catch", "test"))))
   expect_that(data$kobe$SOA[i.kobe], equals(199))
   expect_that(data$kobe$TrialTypeFG[i.kobe],
@@ -78,11 +74,9 @@ test_that("selectData selects the first and last row", {
   expect_that(data$kobe$Latency[i.kobe], equals(c(329)))
 
   i.kobe <- 19724
-  expect_that(data$kobe$subject[i.kobe], equals(1))
-  expect_that(data$kobe$session[i.kobe], equals(2))
-  expect_that(data$kobe$trialNumber[i.kobe], equals(1))
-  expect_that(data$kobe$RTTime[i.kobe], equals(3449742))
-  expect_that(data$kobe$trialType[i.kobe],
+  expect_that(data$kobe$Subject[i.kobe], equals(1))
+  expect_that(data$kobe$Session[i.kobe], equals(2))
+  expect_that(data$kobe$TrialType[i.kobe],
               equals(factor("test", levels=c("catch", "test"))))
   expect_that(data$kobe$SOA[i.kobe], equals(598))
   expect_that(data$kobe$TrialTypeFG[i.kobe],
@@ -92,11 +86,9 @@ test_that("selectData selects the first and last row", {
   expect_that(data$kobe$Latency[i.kobe], equals(c(0)))
 
   i.kobe <- 41482
-  expect_that(data$kobe$subject[i.kobe], equals(145))
-  expect_that(data$kobe$session[i.kobe], equals(2))
-  expect_that(data$kobe$trialNumber[i.kobe], equals(520))
-  expect_that(data$kobe$RTTime[i.kobe], equals(4861299))
-  expect_that(data$kobe$trialType[i.kobe],
+  expect_that(data$kobe$Subject[i.kobe], equals(145))
+  expect_that(data$kobe$Session[i.kobe], equals(2))
+  expect_that(data$kobe$TrialType[i.kobe],
               equals(factor("test", levels=c("catch", "test"))))
   expect_that(data$kobe$SOA[i.kobe], equals(1017))
   expect_that(data$kobe$TrialTypeFG[i.kobe],
@@ -108,11 +100,8 @@ test_that("selectData selects the first and last row", {
   i.ucsb <- 1
   expect_that(data$ucsb$Subject[i.ucsb], equals(1))
   expect_that(data$ucsb$Session[i.ucsb], equals(1))
-  expect_that(data$ucsb$cueDur[i.ucsb], equals(1000))
-  expect_that(data$ucsb$cueSlide.RT[i.ucsb], equals(0))
-  expect_that(data$ucsb$cueSlide.RTTime[i.ucsb], equals(0))
+  expect_that(data$ucsb$CueDur[i.ucsb], equals(1000))
   expect_that(data$ucsb$targetSlide.RT[i.ucsb], equals(0))
-  expect_that(data$ucsb$targetSlide.RTTime[i.ucsb], equals(0))
   expect_that(data$ucsb$TrialTypeBG[i.ucsb],
               equals(factor("Incongruent", levels=c("catch", "Congruent", "Incongruent"))))
   expect_that(data$ucsb$TrialTypeFG[i.ucsb],
@@ -121,11 +110,8 @@ test_that("selectData selects the first and last row", {
   i.ucsb <- 12150
   expect_that(data$ucsb$Subject[i.ucsb], equals(1))
   expect_that(data$ucsb$Session[i.ucsb], equals(1))
-  expect_that(data$ucsb$cueDur[i.ucsb], equals(200))
-  expect_that(data$ucsb$cueSlide.RT[i.ucsb], equals(0))
-  expect_that(data$ucsb$cueSlide.RTTime[i.ucsb], equals(0))
+  expect_that(data$ucsb$CueDur[i.ucsb], equals(200))
   expect_that(data$ucsb$targetSlide.RT[i.ucsb], equals(284))
-  expect_that(data$ucsb$targetSlide.RTTime[i.ucsb], equals(1562321))
   expect_that(data$ucsb$TrialTypeBG[i.ucsb],
               equals(factor("Incongruent", levels=c("catch", "Congruent", "Incongruent"))))
   expect_that(data$ucsb$TrialTypeFG[i.ucsb],
@@ -134,11 +120,8 @@ test_that("selectData selects the first and last row", {
   i.ucsb <- 12151
   expect_that(data$ucsb$Subject[i.ucsb], equals(1))
   expect_that(data$ucsb$Session[i.ucsb], equals(2))
-  expect_that(data$ucsb$cueDur[i.ucsb], equals(1000))
-  expect_that(data$ucsb$cueSlide.RT[i.ucsb], equals(0))
-  expect_that(data$ucsb$cueSlide.RTTime[i.ucsb], equals(0))
+  expect_that(data$ucsb$CueDur[i.ucsb], equals(1000))
   expect_that(data$ucsb$targetSlide.RT[i.ucsb], equals(705))
-  expect_that(data$ucsb$targetSlide.RTTime[i.ucsb], equals(59982))
   expect_that(data$ucsb$TrialTypeBG[i.ucsb],
               equals(factor("Congruent", levels=c("catch", "Congruent", "Incongruent"))))
   expect_that(data$ucsb$TrialTypeFG[i.ucsb],
@@ -147,11 +130,8 @@ test_that("selectData selects the first and last row", {
   i.ucsb <- 26190
   expect_that(data$ucsb$Subject[i.ucsb], equals(82))
   expect_that(data$ucsb$Session[i.ucsb], equals(2))
-  expect_that(data$ucsb$cueDur[i.ucsb], equals(1000))
-  expect_that(data$ucsb$cueSlide.RT[i.ucsb], equals(0))
-  expect_that(data$ucsb$cueSlide.RTTime[i.ucsb], equals(0))
+  expect_that(data$ucsb$CueDur[i.ucsb], equals(1000))
   expect_that(data$ucsb$targetSlide.RT[i.ucsb], equals(392))
-  expect_that(data$ucsb$targetSlide.RTTime[i.ucsb], equals(1526721))
   expect_that(data$ucsb$TrialTypeBG[i.ucsb],
               equals(factor("Congruent", levels=c("catch", "Congruent", "Incongruent"))))
   expect_that(data$ucsb$TrialTypeFG[i.ucsb],
@@ -177,13 +157,13 @@ test_that("assignTreatment assigns the treatment", {
   expect_that(unique(data$ucsb$Treatment[data$ucsb$Subject == 82 & data$ucsb$Session == 2]),
               equals(factor("Placebo", levels=c("Oxytocin", "Placebo"))))
 
-  expect_that(unique(data$kobe$Treatment[data$kobe$subject == 101 & data$kobe$session == 1]),
+  expect_that(unique(data$kobe$Treatment[data$kobe$Subject == 101 & data$kobe$Session == 1]),
               equals(factor("Placebo", levels=c("Oxytocin", "Placebo"))))
-  expect_that(unique(data$kobe$Treatment[data$kobe$subject == 101 & data$kobe$session == 2]),
+  expect_that(unique(data$kobe$Treatment[data$kobe$Subject == 101 & data$kobe$Session == 2]),
               equals(factor("Oxytocin", levels=c("Oxytocin", "Placebo"))))
-  expect_that(unique(data$kobe$Treatment[data$kobe$subject == 145 & data$kobe$session == 1]),
+  expect_that(unique(data$kobe$Treatment[data$kobe$Subject == 145 & data$kobe$Session == 1]),
               equals(factor("Oxytocin", levels=c("Oxytocin", "Placebo"))))
-  expect_that(unique(data$kobe$Treatment[data$kobe$subject == 145 & data$kobe$session == 2]),
+  expect_that(unique(data$kobe$Treatment[data$kobe$Subject == 145 & data$kobe$Session == 2]),
               equals(factor("Placebo", levels=c("Oxytocin", "Placebo"))))
 
 })
