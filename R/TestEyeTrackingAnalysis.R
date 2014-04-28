@@ -100,42 +100,54 @@ test_that("selectData selects the first and last row", {
   i.ucsb <- 1
   expect_that(data$ucsb$Subject[i.ucsb], equals(1))
   expect_that(data$ucsb$Session[i.ucsb], equals(1))
+  expect_that(data$ucsb$TrialName[i.ucsb],
+              equals(factor("practice", levels=c("catch", "pracCatch", "practice", "test"))))
+  expect_that(data$ucsb$CueSlide.RT[i.ucsb], equals(0))
   expect_that(data$ucsb$CueDur[i.ucsb], equals(1000))
-  expect_that(data$ucsb$targetSlide.RT[i.ucsb], equals(0))
   expect_that(data$ucsb$TrialTypeBG[i.ucsb],
               equals(factor("Incongruent", levels=c("catch", "Congruent", "Incongruent"))))
   expect_that(data$ucsb$TrialTypeFG[i.ucsb],
               equals(factor("Congruent", levels=c("catch", "Congruent", "Incongruent"))))
+  expect_that(data$ucsb$TargetSlide.RT[i.ucsb], equals(0))
 
   i.ucsb <- 12150
   expect_that(data$ucsb$Subject[i.ucsb], equals(1))
   expect_that(data$ucsb$Session[i.ucsb], equals(1))
+  expect_that(data$ucsb$TrialName[i.ucsb],
+              equals(factor("test", levels=c("catch", "pracCatch", "practice", "test"))))
+  expect_that(data$ucsb$CueSlide.RT[i.ucsb], equals(0))
   expect_that(data$ucsb$CueDur[i.ucsb], equals(200))
-  expect_that(data$ucsb$targetSlide.RT[i.ucsb], equals(284))
   expect_that(data$ucsb$TrialTypeBG[i.ucsb],
               equals(factor("Incongruent", levels=c("catch", "Congruent", "Incongruent"))))
   expect_that(data$ucsb$TrialTypeFG[i.ucsb],
               equals(factor("Congruent", levels=c("catch", "Congruent", "Incongruent"))))
+  expect_that(data$ucsb$TargetSlide.RT[i.ucsb], equals(284))
 
   i.ucsb <- 12151
   expect_that(data$ucsb$Subject[i.ucsb], equals(1))
   expect_that(data$ucsb$Session[i.ucsb], equals(2))
+  expect_that(data$ucsb$TrialName[i.ucsb],
+              equals(factor("practice", levels=c("catch", "pracCatch", "practice", "test"))))
+  expect_that(data$ucsb$CueSlide.RT[i.ucsb], equals(0))
   expect_that(data$ucsb$CueDur[i.ucsb], equals(1000))
-  expect_that(data$ucsb$targetSlide.RT[i.ucsb], equals(705))
   expect_that(data$ucsb$TrialTypeBG[i.ucsb],
               equals(factor("Congruent", levels=c("catch", "Congruent", "Incongruent"))))
   expect_that(data$ucsb$TrialTypeFG[i.ucsb],
               equals(factor("Congruent", levels=c("catch", "Congruent", "Incongruent"))))
+  expect_that(data$ucsb$TargetSlide.RT[i.ucsb], equals(705))
 
   i.ucsb <- 26190
   expect_that(data$ucsb$Subject[i.ucsb], equals(82))
   expect_that(data$ucsb$Session[i.ucsb], equals(2))
+  expect_that(data$ucsb$TrialName[i.ucsb],
+              equals(factor("test", levels=c("catch", "pracCatch", "practice", "test"))))
+  expect_that(data$ucsb$CueSlide.RT[i.ucsb], equals(0))
   expect_that(data$ucsb$CueDur[i.ucsb], equals(1000))
-  expect_that(data$ucsb$targetSlide.RT[i.ucsb], equals(392))
   expect_that(data$ucsb$TrialTypeBG[i.ucsb],
               equals(factor("Congruent", levels=c("catch", "Congruent", "Incongruent"))))
   expect_that(data$ucsb$TrialTypeFG[i.ucsb],
               equals(factor("Incongruent", levels=c("catch", "Congruent", "Incongruent"))))
+  expect_that(data$ucsb$TargetSlide.RT[i.ucsb], equals(392))
 
 })
 

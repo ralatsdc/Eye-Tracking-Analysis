@@ -184,7 +184,7 @@ selectData <- function(kobe.file.1="./Data/Kobe-Social-Cue-1/case_data.csv",
   ## - cueSlide.OnsetTime
   ## - cueSlide.OnsetToOnsetTime
   ## - cueSlide.RESP
-  ## - cueSlide.RT
+  ## + cueSlide.RT
   ## - cueSlide.RTTime
   ## - DirectionBG
   ## - DirectionFG
@@ -220,16 +220,16 @@ selectData <- function(kobe.file.1="./Data/Kobe-Social-Cue-1/case_data.csv",
     loadData(ucsb.file.1),
     subset=TRUE,
     select=c(
-      Subject, Session, TrialName, cueDur, TrialTypeBG, TrialTypeFG, targetSlide.RT))
+      Subject, Session, TrialName, cueSlide.RT, cueDur, TrialTypeBG, TrialTypeFG, targetSlide.RT))
   colnames(ucsb.data.1) <- c(
-    "Subject", "Session", "TrialName", "CueDur", "TrialTypeBG", "TrialTypeFG", "targetSlide.RT")
+    "Subject", "Session", "TrialName", "CueSlide.RT", "CueDur", "TrialTypeBG", "TrialTypeFG", "TargetSlide.RT")
   ucsb.data.2 <- subset(
     loadData(ucsb.file.2),
     subset=TRUE,
     select=c(
-      Subject, Session, TrialName, cueDur, TrialTypeBG, TrialTypeFG, targetSlide.RT))
+      Subject, Session, TrialName, cueSlide.RT, cueDur, TrialTypeBG, TrialTypeFG, targetSlide.RT))
   colnames(ucsb.data.2) <- c(
-    "Subject", "Session", "TrialName", "CueDur", "TrialTypeBG", "TrialTypeFG", "targetSlide.RT")
+    "Subject", "Session", "TrialName", "CueSlide.RT", "CueDur", "TrialTypeBG", "TrialTypeFG", "TargetSlide.RT")
   ucsb.data <- rbind(ucsb.data.1, ucsb.data.2)
   
   list(kobe=kobe.data, ucsb=ucsb.data)
