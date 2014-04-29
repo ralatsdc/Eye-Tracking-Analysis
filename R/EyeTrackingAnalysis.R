@@ -9,10 +9,10 @@
 ### 
 ### See the LICENSE file or http://opensource.org/licenses/MIT.
 
-assignTreatment <- function(data,
-                            rand.file="./Data/treatment.csv") {
-  ## Assigns treatment data to Kobe and UCSB data based on subject,
-  ## session, and nation.
+assignFactors <- function(data,
+                          fact.file="./Data/treatment-ethnicity.csv") {
+  ## Assigns treatment and ethnicity factors to Kobe and UCSB data
+  ## based on subject, session, and ethnicity.
   
   ## Ensure two and only two sessions equal to one and two present in
   ## the Kobe and UCSB data, since session is used as index below
@@ -26,45 +26,64 @@ assignTreatment <- function(data,
     return(data)
   }
 
-  ## Load the treatment assignment data
-  rand.data <- loadData(rand.file)
+  ## Load the treatment and ethnicity assignment data
+  fact.data <- loadData(fact.file)
 
-  ## Ensure the treatment assignment data contains the expected
-  ## session names
+  ## Ensure the treatment and ethnicity assignment data contains the
+  ## expected names
   session.names <- c("Session.1", "Session.2")
-  if (length(setdiff(session.names, names(rand.data))) > 0) {
-    message("Unexpected names for sessions")
+  fact.names <- c("Subject", session.names, "Ethnicity")
+  if (length(setdiff(fact.names, names(fact.data))) > 0) {
+    message("Unexpected names for factors")
     return(data)
   }
-
-  ## Ensure the treatment assignment data frame session factors have
-  ## identical levels
-  if (!identical(levels(rand.data$Session.1), levels(rand.data$Session.2))) {
+  
+  ## Ensure the treatment and ethnicity assignment data frame session
+  ## factors have identical levels
+  if (!identical(levels(fact.data$Session.1), levels(fact.data$Session.2))) {
     message("Levels for session one and two factors differ")
     return(data)
   }
   
+  ## Ensure the treatment and ethnicity assignment data frame
+  ## ethnicity factor has the expected levels
+  ethn.levels <- c("Asian American", "European American", "Japanese")
+  if (!identical(levels(fact.data$Ethnicity), ethn.levels)) {
+    message("Levels for ethnicity have unexpected values")
+    return(data)
+  }
+
   ## Column bind a treatment factor to the Kobe and UCSB data frame
-  data$kobe <- cbind(data$kobe, Treatment=factor("", levels(rand.data$Session.1)))
-  data$ucsb <- cbind(data$ucsb, Treatment=factor("", levels(rand.data$Session.1)))
+  data$kobe <- cbind(data$kobe, Treatment=factor("", levels(fact.data$Session.1)))
+  data$ucsb <- cbind(data$ucsb, Treatment=factor("", levels(fact.data$Session.1)))
+
+  ## Column bind an ethnicity factor to the Kobe and UCSB data frame
+  data$kobe <- cbind(data$kobe, Ethnicity=factor("", ethn.levels))
+  data$ucsb <- cbind(data$ucsb, Ethnicity=factor("", ethn.levels))
 
   ## Consider each unique Kobe subject
   for (unq.subject in unique(data$kobe$Subject)) {
 
     ## Ensure that the current unique subject is found once and only
     ## once in the treatment assignment data
-    rand.idx <- rand.data$Subject == unq.subject & rand.data$Nation == "JP"
-    if (sum(rand.idx) > 1) {
+    fact.idx <- (fact.data$Subject == unq.subject
+                 & fact.data$Ethnicity == "Japanese")
+    if (sum(fact.idx) > 1) {
       message(sprintf("Found more than one entry for subject %d", unq.subject))
       return(data)
     }
+
+    ## Assign the ethnicity for the current unique subject
+    cur.ethnicity <- fact.data$Ethnicity[fact.idx]
+    data.idx <- data$kobe$Subject == unq.subject
+    data$kobe$Ethnicity[data.idx] <- cur.ethnicity
 
     ## Consider each unique Kobe session
     for (unq.session in unique(data$kobe$Session)) {
 
       ## Assign the treatment for the current unique subject and
       ## session
-      cur.treatment <- rand.data[[session.names[unq.session]]][rand.idx]
+      cur.treatment <- fact.data[[session.names[unq.session]]][fact.idx]
       data.idx <- data$kobe$Subject == unq.subject & data$kobe$Session == unq.session
       data$kobe$Treatment[data.idx] <- cur.treatment
      }
@@ -75,18 +94,25 @@ assignTreatment <- function(data,
 
     ## Ensure that the current unique subject is found once and only
     ## once in the treatment assignment data
-    rand.idx <- rand.data$Subject == unq.subject & rand.data$Nation == "US"
-    if (sum(rand.idx) > 1) {
+    fact.idx <- (fact.data$Subject == unq.subject
+                 & (fact.data$Ethnicity == "Asian American"
+                    | fact.data$Ethnicity == "European American"))
+    if (sum(fact.idx) > 1) {
       message(sprintf("Found more than one entry for subject %d", unq.subject))
       return(data)
     }
+
+    ## Assign the ethnicity for the current unique subject
+    cur.ethnicity <- fact.data$Ethnicity[fact.idx]
+    data.idx <- data$ucsb$Subject == unq.subject
+    data$ucsb$Ethnicity[data.idx] <- cur.ethnicity
 
     ## Consider each unique UCSB session
     for (unq.session in unique(data$ucsb$Session)) {
 
       ## Assign the treatment for the current unique subject and
       ## session
-      cur.treatment <- rand.data[[session.names[unq.session]]][rand.idx]
+      cur.treatment <- fact.data[[session.names[unq.session]]][fact.idx]
       data.idx <- data$ucsb$Subject == unq.subject & data$ucsb$Session == unq.session
       data$ucsb$Treatment[data.idx] <- cur.treatment
      }

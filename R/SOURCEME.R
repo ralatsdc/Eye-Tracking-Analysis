@@ -12,4 +12,4 @@
 source('./R/EyeTrackingAnalysis.R')
 
 data <- selectData()
-data <- assignTreatment(data)
+data <- assignFactors(data)

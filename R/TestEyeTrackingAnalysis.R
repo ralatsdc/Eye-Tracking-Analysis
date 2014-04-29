@@ -151,14 +151,14 @@ test_that("selectData selects the first and last row", {
 
 })
 
-test_that("assignTreatment assigns the treatment", {
+test_that("assignFactors assigns the treatment and ethnicity", {
 
   data <- selectData(kobe.file.1="../Data/Kobe-Social-Cue-1/case_data.csv",
                      kobe.file.2="../Data/Kobe-Social-Cue-2/case_data.csv",
                      ucsb.file.1="../Data/UCSB-Social-Cue-1/case_data.csv",
                      ucsb.file.2="../Data/UCSB-Social-Cue-2/case_data.csv")
-  data <- assignTreatment(data,
-                          rand.file="../Data/treatment.csv")
+  data <- assignFactors(data,
+                        fact.file="../Data/treatment-ethnicity.csv")
   
   expect_that(unique(data$ucsb$Treatment[data$ucsb$Subject == 10 & data$ucsb$Session == 1]),
               equals(factor("Placebo", levels=c("Oxytocin", "Placebo"))))
@@ -177,5 +177,13 @@ test_that("assignTreatment assigns the treatment", {
               equals(factor("Oxytocin", levels=c("Oxytocin", "Placebo"))))
   expect_that(unique(data$kobe$Treatment[data$kobe$Subject == 145 & data$kobe$Session == 2]),
               equals(factor("Placebo", levels=c("Oxytocin", "Placebo"))))
+
+  expect_that(unique(data$ucsb$Ethnicity[data$ucsb$Subject == 10]),
+              equals(factor("European American", levels=c("Asian American", "European American", "Japanese"))))
+  expect_that(unique(data$ucsb$Ethnicity[data$ucsb$Subject == 82]),
+              equals(factor("Asian American", levels=c("Asian American", "European American", "Japanese"))))
+
+  expect_that(unique(data$kobe$Ethnicity[data$kobe$Subject == 101]),
+              equals(factor("Japanese", levels=c("Asian American", "European American", "Japanese"))))
 
 })
