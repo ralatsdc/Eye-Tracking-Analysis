@@ -12,9 +12,10 @@
 ### standard deviations of all measurements.
 ### 
 ### Assigns treatment and ethnicity factors to Kobe and UCSB data
-### based on subject, session, and ethnicity.
+### based on subject, session, and site.
 ### 
 ### Copyright (c) 2014 Jessica E. and Raymond A. LeClair
+### 
 ### This program can be redistributed and/or modified under the terms
 ### of the MIT License as published by the Open Source Initiative.
 ### 
@@ -166,7 +167,7 @@ rejectOutliers <- function(data) {
 assignFactors <- function(data,
                           fact.file="./Data/treatment-ethnicity.csv") {
   ## Assigns treatment and ethnicity factors to Kobe and UCSB data
-  ## based on subject, session, and ethnicity.
+  ## based on subject, session, and site.
   
   ## Ensure two and only two sessions equal to one and two present in
   ## the Kobe and UCSB data, since session is used as index below
