@@ -1,7 +1,5 @@
 ### TestEyeTrackingAnalysis
 ###
-### TODO: Complete
-### 
 ### Copyright (c) 2014 Jessica E. and Raymond A. LeClair
 ### 
 ### This program can be redistributed and/or modified under the terms
@@ -185,5 +183,114 @@ test_that("assignFactors assigns the treatment and ethnicity", {
 
   expect_that(unique(data$kobe$Ethnicity[data$kobe$Subject == 101]),
               equals(factor("Japanese", levels=c("Asian American", "European American", "Japanese"))))
+
+})
+
+
+test_that("rejectOutliers rejects outliers, and only outliers", {
+
+  inp.data <- selectData(kobe.file.1="../Data/Kobe-Social-Cue-1/case_data.csv",
+                         kobe.file.2="../Data/Kobe-Social-Cue-2/case_data.csv",
+                         ucsb.file.1="../Data/UCSB-Social-Cue-1/case_data.csv",
+                         ucsb.file.2="../Data/UCSB-Social-Cue-2/case_data.csv")
+  inp.data <- assignFactors(inp.data,
+                            fact.file="../Data/treatment-ethnicity.csv")
+
+  out.data <- rejectOutliers(inp.data)
+
+  threshold <- 100
+  
+  expect_that("catch" %in% out.data$kobe$TrialType, equals(FALSE))
+  expect_that(sum(out.data$kobe$Latency < threshold), equals(0))
+  expect_that(sum(out.data$kobe$Latency > 3.0 * sd(inp.data$kobe$Latency, na.rm=TRUE)), equals(0))
+  
+  expect_that(sum(out.data$ucsb$CueSlide.RT > 0), equals(0))
+  expect_that(sum(out.data$ucsb$TargetSlide.RT < threshold), equals(0))
+  expect_that(sum(out.data$ucsb$TargetSlide.RT > 3.0 * sd(inp.data$ucsb$TargetSlide.RT, na.rm=TRUE)), equals(0))
+
+})
+
+test_that("getBinIdx gets bin indexes by named intervals", {
+
+  data <- list()
+  bin.idx <- vector()
+
+  expect_that(getBinIdx(data, ""), equals(bin.idx))
+  expect_that(getBinIdx(data, ""), shows_message("No expected measurement found in the site data"))
+
+  data <- list()
+  data$SOA <- c(200, 600, 1000)
+
+  expect_that(getBinIdx(data, "100"), shows_message("Unexpected named interval"))
+
+  bin.idx <- c(TRUE, FALSE, FALSE)
+  expect_that(getBinIdx(data, "200"), equals(bin.idx))
+
+  bin.idx <- c(FALSE, TRUE, FALSE)
+  expect_that(getBinIdx(data, "600"), equals(bin.idx))
+
+  bin.idx <- c(FALSE, FALSE, TRUE)
+  expect_that(getBinIdx(data, "1000"), equals(bin.idx))
+
+  data <- list()
+  data$CueDur <- c(200, 600, 1000)
+
+  bin.idx <- c(TRUE, FALSE, FALSE)
+  expect_that(getBinIdx(data, "200"), equals(bin.idx))
+
+  bin.idx <- c(FALSE, TRUE, FALSE)
+  expect_that(getBinIdx(data, "600"), equals(bin.idx))
+
+  bin.idx <- c(FALSE, FALSE, TRUE)
+  expect_that(getBinIdx(data, "1000"), equals(bin.idx))
+
+})
+
+test_that("computeSubjecMean computes the subject mean for one case", {
+
+  data <- selectData(kobe.file.1="../Data/Kobe-Social-Cue-1/case_data.csv",
+                     kobe.file.2="../Data/Kobe-Social-Cue-2/case_data.csv",
+                     ucsb.file.1="../Data/UCSB-Social-Cue-1/case_data.csv",
+                     ucsb.file.2="../Data/UCSB-Social-Cue-2/case_data.csv")
+  data <- assignFactors(data,
+                        fact.file="../Data/treatment-ethnicity.csv")
+
+  subject.mean <- computeSubjectMean(data$kobe, 1, "Oxytocin", "200")
+          
+  ## ./4-RStudio/Eye-Tracking-Analysis/Data/Kobe-Social-Cue-1/test_computeSubjectMean.xlsx
+  expect_that(subject.mean$Subject, equals(1))
+  expect_that(subject.mean$Treatment,
+              equals(factor("Oxytocin", levels=c("Oxytocin"))))
+  expect_that(subject.mean$Ethnicity,
+              equals(factor("Japanese", levels=c("Asian American", "European American", "Japanese"))))
+  expect_that(subject.mean$Bin,
+              equals(factor("200", levels=c("200"))))
+  expect_that(subject.mean$I.I - 318.45, is_less_than(1.0e-06))
+  expect_that(subject.mean$C.C - 315.80, is_less_than(1.0e-06))
+  expect_that(subject.mean$SCI.Matched - (318.45 - 315.80), is_less_than(1.0e-06))
+  expect_that(subject.mean$I.C - 377.16, is_less_than(1.0e-06))
+  expect_that(subject.mean$C.I - 337.14, is_less_than(1.0e-02))
+  expect_that(subject.mean$SCI.Unmatched - (377.16 - 337.14), is_less_than(1.0e-06))
+
+})
+
+test_that("computeSubjectMeans computes the subject means for UCSB", {
+
+  data <- selectData(kobe.file.1="../Data/Kobe-Social-Cue-1/case_data.csv",
+                     kobe.file.2="../Data/Kobe-Social-Cue-2/case_data.csv",
+                     ucsb.file.1="../Data/UCSB-Social-Cue-1/case_data.csv",
+                     ucsb.file.2="../Data/UCSB-Social-Cue-2/case_data.csv")
+  data <- assignFactors(data,
+                        fact.file="../Data/treatment-ethnicity.csv")
+  data <- rejectOutliers(data)
+
+  means <- list()
+  means$ucsb <- computeSubjectMeans(data$ucsb)
+
+  expect_that(names(means$ucsb),
+              equals(c("Subject", "Treatment", "Ethnicity", "Bin",
+                       "I.I", "C.C", "SCI.Matched", "I.C", "C.I",
+                       "SCI.Unmatched")))
+  expect_that(length(means$ucsb$Subject), equals(6 * length(unique(data$ucsb$Subject))))
 
 })

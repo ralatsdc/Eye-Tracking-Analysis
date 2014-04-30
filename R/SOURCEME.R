@@ -1,6 +1,6 @@
 ### SOURCEME.R
 ###
-### TODO: Complete.
+### Source this file to process all eye tracking data.
 ### 
 ### Copyright (c) 2014 Jessica E. and Raymond A. LeClair
 ### 
@@ -13,3 +13,6 @@ source('./R/EyeTrackingAnalysis.R')
 
 data <- selectData()
 data <- assignFactors(data)
+data <- rejectOutliers(data)
+
+means <- computeMeans(data)

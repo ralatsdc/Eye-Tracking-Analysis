@@ -1,13 +1,167 @@
 ### EyeTrackingAnalysis
 ###
-### TODO: Complete
+### Computes the mean Kobe Latency or UCSB TargetSlide.RT measurement
+### for all subjects, treatments, and bins.
+### 
+### Gets bin indexes by named intervals using the Kobe SOA and the
+### UCSB CueDur measurements.
+###
+### Reject trials in which a response was made prior to the target
+### being presented, or in which the response time is below a
+### threshold, or in which the response time is greater than three
+### standard deviations of all measurements.
+### 
+### Assigns treatment and ethnicity factors to Kobe and UCSB data
+### based on subject, session, and ethnicity.
 ### 
 ### Copyright (c) 2014 Jessica E. and Raymond A. LeClair
-### 
 ### This program can be redistributed and/or modified under the terms
 ### of the MIT License as published by the Open Source Initiative.
 ### 
 ### See the LICENSE file or http://opensource.org/licenses/MIT.
+
+computeMeans <- function(data) {
+  ## Compute the subject means for the Kobe and UCSB data sets
+  ## separately.
+  
+  ## Initialize the return value
+  means <- list()
+
+  ## Compute the subject means for the Kobe data set
+  means$kobe <- computeSubjectMeans(data$kobe)
+
+  ## Compute the subject means for the UCSB data set
+  means$ucsb <- computeSubjectMeans(data$ucsb)
+
+  means
+}
+
+computeSubjectMeans <- function(site.data) {
+  ## Compute the mean Kobe Latency or UCSB TargetSlide.RT measurement
+  ## for all subjects, treatments, and bins.
+
+  ## Initialize the return value
+  subject.means <- data.frame()
+
+  ## Assign named bins
+  bins <- c("200", "600", "1000")
+
+  ## Consider each unique subject
+  for (subject in unique(site.data$Subject)) {
+
+    ## Consider each unique treatment
+    for (treatment in unique(site.data$Treatment)) {
+
+      ## Consider each bin
+      for (bin in bins) {
+        
+        ## Collect all subject means for each bin, treatment, and subject
+        subject.means <- rbind(subject.means,
+                               computeSubjectMean(site.data, subject, treatment, bin))
+      }
+    }
+  }
+  subject.means
+}
+
+computeSubjectMean <- function(site.data, subject, treatment, bin) {
+  ## Compute the mean Kobe Latency or UCSB TargetSlide.RT measurement
+  ## for a given subject, treatment, and bin.
+  
+  ## Initialize the return value
+  subject.mean <- data.frame()
+  
+  ## Ensure the expected measurement is found in the site data
+  if ("Latency" %in% names(site.data)) {
+    measurement <- "Latency"
+  } else if ("TargetSlide.RT" %in% names(site.data)) {
+    measurement <- "TargetSlide.RT"
+  } else {
+    message("No expected measurement found in the site data")
+    return(subject.mean)
+  }
+
+  ## Identify the subject, treatment, and bin
+  subject.idx <- site.data$Subject == subject
+  treatment.idx <- site.data$Treatment == treatment
+  bin.idx <- getBinIdx(site.data, bin)
+  site.data.idx <- subject.idx & treatment.idx & bin.idx
+
+  ## Identify the ethnicity
+  ethnicity <- site.data$Ethnicity[site.data.idx][1]
+
+  ## Identify the foreground-background congruence cases
+  i.i.idx <- site.data$TrialTypeFG == "Incongruent" & site.data$TrialTypeBG == "Incongruent"
+  c.c.idx <- site.data$TrialTypeFG == "Congruent"  & site.data$TrialTypeBG == "Congruent"
+  i.c.idx <- site.data$TrialTypeFG == "Incongruent" & site.data$TrialTypeBG == "Congruent"
+  c.i.idx <- site.data$TrialTypeFG == "Congruent"  & site.data$TrialTypeBG == "Incongruent"
+
+  ## Compute the means for the foreground-background congruence cases
+  i.i.mean <- mean(site.data[[measurement]][site.data.idx & i.i.idx], na.rm=TRUE)
+  c.c.mean <- mean(site.data[[measurement]][site.data.idx & c.c.idx], na.rm=TRUE)
+  i.c.mean <- mean(site.data[[measurement]][site.data.idx & i.c.idx], na.rm=TRUE)
+  c.i.mean <- mean(site.data[[measurement]][site.data.idx & c.i.idx], na.rm=TRUE)
+  
+  ## Assemble the results as a data frame
+  subject.mean <- data.frame(Subject=subject, Treatment=treatment, Ethnicity=ethnicity, Bin=bin,
+                             I.I=i.i.mean, C.C=c.c.mean, SCI.Matched=i.i.mean - c.c.mean,
+                             I.C=i.c.mean, C.I=c.i.mean, SCI.Unmatched=i.c.mean - c.i.mean)
+}
+
+getBinIdx <- function(site.data, bin) {
+  ## Get bin indexes by named intervals using the Kobe SOA and the
+  ## UCSB CueDur measurements.
+  
+  ## Initialize the return value
+  bin.idx <- vector()
+
+  ## Ensure the expected measurement is found in the site data
+  if ("SOA" %in% names(site.data)) {
+    measurement <- "SOA"
+  } else if ("CueDur" %in% names(site.data)) {
+    measurement <- "CueDur"
+  } else {
+    message("No expected measurement found in the site data")
+    return(bin.idx)
+  }
+
+  ## Get bin indexes by named intervals
+  if (bin == "200") {
+    bin.idx <- site.data[[measurement]] < 400
+  } else if (bin == "600") {
+    bin.idx <- 400 <= site.data[[measurement]] & site.data[[measurement]] < 800
+  } else if (bin == "1000") {
+    bin.idx <- 800 <= site.data[[measurement]]
+  } else {
+    message("Unexpected named interval")
+    return(bin.idx)
+  }
+  bin.idx
+}
+
+rejectOutliers <- function(data) {
+  ## Reject trials in which a response was made prior to the target
+  ## being presented, or in which the response time is below a
+  ## threshold, or in which the response time is greater than three
+  ## standard deviations of all measurements.
+
+  ## Assign the threshold
+  threshold <- 100 # ms
+
+  ## Filter the Kobe data
+  data$kobe <- subset(data$kobe,
+                      subset = ! (data$kobe$TrialType == "catch"
+                                  | data$kobe$Latency < threshold
+                                  | data$kobe$Latency > 3.0 * sd(data$kobe$Latency, na.rm=TRUE)))
+
+  ## Filter the UCSB data
+  data$ucsb <- subset(data$ucsb,
+                      subset = ! (data$ucsb$CueSlide.RT > 0
+                                  | data$ucsb$TargetSlide.RT < threshold
+                                  | data$ucsb$TargetSlide.RT > 3.0 * sd(data$ucsb$TargetSlide.RT, na.rm=TRUE)))
+  
+  data
+}
 
 assignFactors <- function(data,
                           fact.file="./Data/treatment-ethnicity.csv") {
