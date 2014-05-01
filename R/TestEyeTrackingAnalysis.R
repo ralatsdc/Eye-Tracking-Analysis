@@ -9,6 +9,16 @@
 
 source("EyeTrackingAnalysis.R")
 
+data.1 <- selectData(kobe.file.1="../Data/Kobe-Social-Cue-1/case_data.csv",
+                     kobe.file.2="../Data/Kobe-Social-Cue-2/case_data.csv",
+                     ucsb.file.1="../Data/UCSB-Social-Cue-1/case_data.csv",
+                     ucsb.file.2="../Data/UCSB-Social-Cue-2/case_data.csv")
+data.2 <- assignFactors(data.1,
+                        fact.file="../Data/treatment-ethnicity.csv")
+data.3 <- rejectOutliers(data.2)
+
+means <- computeMeans(data.3)
+
 test_that("loadData accepts 'csv' files, which exist, only", {
   expect_that(loadData("../Data/case_list.dat"), shows_message("../Data/case_list.dat must be a 'csv' file"))
   expect_that(loadData("case_list.dat"), equals(NULL))
@@ -25,7 +35,7 @@ test_that("loadData reads and saves, or loads", {
   expect_that(loadData(text.file), shows_message(paste("loaded", data.file)))
 })
 
-test_that("loadData loads the data", {
+test_that("loadData loads the expected data", {
   text.file <- "../Data/test_data.csv"
   data <- data.frame(
     subject=as.integer(c(1, 1, 1)),
@@ -40,173 +50,159 @@ test_that("loadData loads the data", {
   expect_that(loadData(text.file), equals(data))
 })
 
-test_that("selectData selects the first and last row", {
-
-  data <- selectData(kobe.file.1="../Data/Kobe-Social-Cue-1/case_data.csv",
-                     kobe.file.2="../Data/Kobe-Social-Cue-2/case_data.csv",
-                     ucsb.file.1="../Data/UCSB-Social-Cue-1/case_data.csv",
-                     ucsb.file.2="../Data/UCSB-Social-Cue-2/case_data.csv")
+test_that("selectData selects the first and last row of each Kobe or UCSB data set", {
 
   i.kobe <- 1
-  expect_that(data$kobe$Subject[i.kobe], equals(1))
-  expect_that(data$kobe$Session[i.kobe], equals(1))
-  expect_that(data$kobe$TrialType[i.kobe],
+  expect_that(data.1$kobe$Subject[i.kobe], equals(1))
+  expect_that(data.1$kobe$Session[i.kobe], equals(1))
+  expect_that(data.1$kobe$TrialType[i.kobe],
               equals(factor("test", levels=c("catch", "test"))))
-  expect_that(data$kobe$SOA[i.kobe], equals(997))
-  expect_that(data$kobe$TrialTypeFG[i.kobe],
+  expect_that(data.1$kobe$SOA[i.kobe], equals(997))
+  expect_that(data.1$kobe$TrialTypeFG[i.kobe],
               equals(factor("Neutral", levels=c("catch", "Congruent", "Incongruent", "Neutral"))))
-  expect_that(data$kobe$TrialTypeBG[i.kobe],
+  expect_that(data.1$kobe$TrialTypeBG[i.kobe],
               equals(factor("Incongruent", levels=c("catch", "Congruent", "Incongruent", "Neutral"))))
-  expect_that(data$kobe$Latency[i.kobe], equals(c(361)))
+  expect_that(data.1$kobe$Latency[i.kobe], equals(c(361)))
 
   i.kobe <- 19723
-  expect_that(data$kobe$Subject[i.kobe], equals(2))
-  expect_that(data$kobe$Session[i.kobe], equals(1))
-  expect_that(data$kobe$TrialType[i.kobe],
+  expect_that(data.1$kobe$Subject[i.kobe], equals(2))
+  expect_that(data.1$kobe$Session[i.kobe], equals(1))
+  expect_that(data.1$kobe$TrialType[i.kobe],
               equals(factor("test", levels=c("catch", "test"))))
-  expect_that(data$kobe$SOA[i.kobe], equals(199))
-  expect_that(data$kobe$TrialTypeFG[i.kobe],
+  expect_that(data.1$kobe$SOA[i.kobe], equals(199))
+  expect_that(data.1$kobe$TrialTypeFG[i.kobe],
               equals(factor("Incongruent", levels=c("catch", "Congruent", "Incongruent", "Neutral"))))
-  expect_that(data$kobe$TrialTypeBG[i.kobe],
+  expect_that(data.1$kobe$TrialTypeBG[i.kobe],
               equals(factor("Neutral", levels=c("catch", "Congruent", "Incongruent", "Neutral"))))
-  expect_that(data$kobe$Latency[i.kobe], equals(c(329)))
+  expect_that(data.1$kobe$Latency[i.kobe], equals(c(329)))
 
   i.kobe <- 19724
-  expect_that(data$kobe$Subject[i.kobe], equals(1))
-  expect_that(data$kobe$Session[i.kobe], equals(2))
-  expect_that(data$kobe$TrialType[i.kobe],
+  expect_that(data.1$kobe$Subject[i.kobe], equals(1))
+  expect_that(data.1$kobe$Session[i.kobe], equals(2))
+  expect_that(data.1$kobe$TrialType[i.kobe],
               equals(factor("test", levels=c("catch", "test"))))
-  expect_that(data$kobe$SOA[i.kobe], equals(598))
-  expect_that(data$kobe$TrialTypeFG[i.kobe],
+  expect_that(data.1$kobe$SOA[i.kobe], equals(598))
+  expect_that(data.1$kobe$TrialTypeFG[i.kobe],
               equals(factor("Incongruent", levels=c("catch", "Congruent", "Incongruent", "Neutral"))))
-  expect_that(data$kobe$TrialTypeBG[i.kobe],
+  expect_that(data.1$kobe$TrialTypeBG[i.kobe],
               equals(factor("Incongruent", levels=c("catch", "Congruent", "Incongruent", "Neutral"))))
-  expect_that(data$kobe$Latency[i.kobe], equals(c(0)))
+  expect_that(data.1$kobe$Latency[i.kobe], equals(c(0)))
 
   i.kobe <- 41482
-  expect_that(data$kobe$Subject[i.kobe], equals(145))
-  expect_that(data$kobe$Session[i.kobe], equals(2))
-  expect_that(data$kobe$TrialType[i.kobe],
+  expect_that(data.1$kobe$Subject[i.kobe], equals(145))
+  expect_that(data.1$kobe$Session[i.kobe], equals(2))
+  expect_that(data.1$kobe$TrialType[i.kobe],
               equals(factor("test", levels=c("catch", "test"))))
-  expect_that(data$kobe$SOA[i.kobe], equals(1017))
-  expect_that(data$kobe$TrialTypeFG[i.kobe],
+  expect_that(data.1$kobe$SOA[i.kobe], equals(1017))
+  expect_that(data.1$kobe$TrialTypeFG[i.kobe],
               equals(factor("Incongruent", levels=c("catch", "Congruent", "Incongruent", "Neutral"))))
-  expect_that(data$kobe$TrialTypeBG[i.kobe],
+  expect_that(data.1$kobe$TrialTypeBG[i.kobe],
               equals(factor("Neutral", levels=c("catch", "Congruent", "Incongruent", "Neutral"))))
-  expect_that(data$kobe$Latency[i.kobe], equals(c(254)))
+  expect_that(data.1$kobe$Latency[i.kobe], equals(c(254)))
 
   i.ucsb <- 1
-  expect_that(data$ucsb$Subject[i.ucsb], equals(1))
-  expect_that(data$ucsb$Session[i.ucsb], equals(1))
-  expect_that(data$ucsb$TrialName[i.ucsb],
+  expect_that(data.1$ucsb$Subject[i.ucsb], equals(1))
+  expect_that(data.1$ucsb$Session[i.ucsb], equals(1))
+  expect_that(data.1$ucsb$TrialName[i.ucsb],
               equals(factor("practice", levels=c("catch", "pracCatch", "practice", "test"))))
-  expect_that(data$ucsb$CueSlide.RT[i.ucsb], equals(0))
-  expect_that(data$ucsb$CueDur[i.ucsb], equals(1000))
-  expect_that(data$ucsb$TrialTypeBG[i.ucsb],
+  expect_that(data.1$ucsb$CueSlide.RT[i.ucsb], equals(0))
+  expect_that(data.1$ucsb$CueDur[i.ucsb], equals(1000))
+  expect_that(data.1$ucsb$TrialTypeBG[i.ucsb],
               equals(factor("Incongruent", levels=c("catch", "Congruent", "Incongruent"))))
-  expect_that(data$ucsb$TrialTypeFG[i.ucsb],
+  expect_that(data.1$ucsb$TrialTypeFG[i.ucsb],
               equals(factor("Congruent", levels=c("catch", "Congruent", "Incongruent"))))
-  expect_that(data$ucsb$TargetSlide.RT[i.ucsb], equals(0))
+  expect_that(data.1$ucsb$TargetSlide.RT[i.ucsb], equals(0))
 
   i.ucsb <- 12150
-  expect_that(data$ucsb$Subject[i.ucsb], equals(1))
-  expect_that(data$ucsb$Session[i.ucsb], equals(1))
-  expect_that(data$ucsb$TrialName[i.ucsb],
+  expect_that(data.1$ucsb$Subject[i.ucsb], equals(1))
+  expect_that(data.1$ucsb$Session[i.ucsb], equals(1))
+  expect_that(data.1$ucsb$TrialName[i.ucsb],
               equals(factor("test", levels=c("catch", "pracCatch", "practice", "test"))))
-  expect_that(data$ucsb$CueSlide.RT[i.ucsb], equals(0))
-  expect_that(data$ucsb$CueDur[i.ucsb], equals(200))
-  expect_that(data$ucsb$TrialTypeBG[i.ucsb],
+  expect_that(data.1$ucsb$CueSlide.RT[i.ucsb], equals(0))
+  expect_that(data.1$ucsb$CueDur[i.ucsb], equals(200))
+  expect_that(data.1$ucsb$TrialTypeBG[i.ucsb],
               equals(factor("Incongruent", levels=c("catch", "Congruent", "Incongruent"))))
-  expect_that(data$ucsb$TrialTypeFG[i.ucsb],
+  expect_that(data.1$ucsb$TrialTypeFG[i.ucsb],
               equals(factor("Congruent", levels=c("catch", "Congruent", "Incongruent"))))
-  expect_that(data$ucsb$TargetSlide.RT[i.ucsb], equals(284))
+  expect_that(data.1$ucsb$TargetSlide.RT[i.ucsb], equals(284))
 
   i.ucsb <- 12151
-  expect_that(data$ucsb$Subject[i.ucsb], equals(1))
-  expect_that(data$ucsb$Session[i.ucsb], equals(2))
-  expect_that(data$ucsb$TrialName[i.ucsb],
+  expect_that(data.1$ucsb$Subject[i.ucsb], equals(1))
+  expect_that(data.1$ucsb$Session[i.ucsb], equals(2))
+  expect_that(data.1$ucsb$TrialName[i.ucsb],
               equals(factor("practice", levels=c("catch", "pracCatch", "practice", "test"))))
-  expect_that(data$ucsb$CueSlide.RT[i.ucsb], equals(0))
-  expect_that(data$ucsb$CueDur[i.ucsb], equals(1000))
-  expect_that(data$ucsb$TrialTypeBG[i.ucsb],
+  expect_that(data.1$ucsb$CueSlide.RT[i.ucsb], equals(0))
+  expect_that(data.1$ucsb$CueDur[i.ucsb], equals(1000))
+  expect_that(data.1$ucsb$TrialTypeBG[i.ucsb],
               equals(factor("Congruent", levels=c("catch", "Congruent", "Incongruent"))))
-  expect_that(data$ucsb$TrialTypeFG[i.ucsb],
+  expect_that(data.1$ucsb$TrialTypeFG[i.ucsb],
               equals(factor("Congruent", levels=c("catch", "Congruent", "Incongruent"))))
-  expect_that(data$ucsb$TargetSlide.RT[i.ucsb], equals(705))
+  expect_that(data.1$ucsb$TargetSlide.RT[i.ucsb], equals(705))
 
   i.ucsb <- 26190
-  expect_that(data$ucsb$Subject[i.ucsb], equals(82))
-  expect_that(data$ucsb$Session[i.ucsb], equals(2))
-  expect_that(data$ucsb$TrialName[i.ucsb],
+  expect_that(data.1$ucsb$Subject[i.ucsb], equals(82))
+  expect_that(data.1$ucsb$Session[i.ucsb], equals(2))
+  expect_that(data.1$ucsb$TrialName[i.ucsb],
               equals(factor("test", levels=c("catch", "pracCatch", "practice", "test"))))
-  expect_that(data$ucsb$CueSlide.RT[i.ucsb], equals(0))
-  expect_that(data$ucsb$CueDur[i.ucsb], equals(1000))
-  expect_that(data$ucsb$TrialTypeBG[i.ucsb],
+  expect_that(data.1$ucsb$CueSlide.RT[i.ucsb], equals(0))
+  expect_that(data.1$ucsb$CueDur[i.ucsb], equals(1000))
+  expect_that(data.1$ucsb$TrialTypeBG[i.ucsb],
               equals(factor("Congruent", levels=c("catch", "Congruent", "Incongruent"))))
-  expect_that(data$ucsb$TrialTypeFG[i.ucsb],
+  expect_that(data.1$ucsb$TrialTypeFG[i.ucsb],
               equals(factor("Incongruent", levels=c("catch", "Congruent", "Incongruent"))))
-  expect_that(data$ucsb$TargetSlide.RT[i.ucsb], equals(392))
+  expect_that(data.1$ucsb$TargetSlide.RT[i.ucsb], equals(392))
 
 })
 
-test_that("assignFactors assigns the treatment and ethnicity", {
+test_that("assignFactors assigns the expected treatment and ethnicity", {
 
-  data <- selectData(kobe.file.1="../Data/Kobe-Social-Cue-1/case_data.csv",
-                     kobe.file.2="../Data/Kobe-Social-Cue-2/case_data.csv",
-                     ucsb.file.1="../Data/UCSB-Social-Cue-1/case_data.csv",
-                     ucsb.file.2="../Data/UCSB-Social-Cue-2/case_data.csv")
-  data <- assignFactors(data,
-                        fact.file="../Data/treatment-ethnicity.csv")
+  data.1 <- selectData(kobe.file.1="../Data/Kobe-Social-Cue-1/case_data.csv",
+                       kobe.file.2="../Data/Kobe-Social-Cue-2/case_data.csv",
+                       ucsb.file.1="../Data/UCSB-Social-Cue-1/case_data.csv",
+                       ucsb.file.2="../Data/UCSB-Social-Cue-2/case_data.csv")
+  data.2 <- assignFactors(data.1,
+                          fact.file="../Data/treatment-ethnicity.csv")
   
-  expect_that(unique(data$ucsb$Treatment[data$ucsb$Subject == 10 & data$ucsb$Session == 1]),
+  expect_that(unique(data.2$ucsb$Treatment[data.2$ucsb$Subject == 10 & data.2$ucsb$Session == 1]),
               equals(factor("Placebo", levels=c("Oxytocin", "Placebo"))))
-  expect_that(unique(data$ucsb$Treatment[data$ucsb$Subject == 10 & data$ucsb$Session == 2]),
+  expect_that(unique(data.2$ucsb$Treatment[data.2$ucsb$Subject == 10 & data.2$ucsb$Session == 2]),
               equals(factor("Oxytocin", levels=c("Oxytocin", "Placebo"))))
-  expect_that(unique(data$ucsb$Treatment[data$ucsb$Subject == 82 & data$ucsb$Session == 1]),
+  expect_that(unique(data.2$ucsb$Treatment[data.2$ucsb$Subject == 82 & data.2$ucsb$Session == 1]),
               equals(factor("Oxytocin", levels=c("Oxytocin", "Placebo"))))
-  expect_that(unique(data$ucsb$Treatment[data$ucsb$Subject == 82 & data$ucsb$Session == 2]),
-              equals(factor("Placebo", levels=c("Oxytocin", "Placebo"))))
-
-  expect_that(unique(data$kobe$Treatment[data$kobe$Subject == 101 & data$kobe$Session == 1]),
-              equals(factor("Placebo", levels=c("Oxytocin", "Placebo"))))
-  expect_that(unique(data$kobe$Treatment[data$kobe$Subject == 101 & data$kobe$Session == 2]),
-              equals(factor("Oxytocin", levels=c("Oxytocin", "Placebo"))))
-  expect_that(unique(data$kobe$Treatment[data$kobe$Subject == 145 & data$kobe$Session == 1]),
-              equals(factor("Oxytocin", levels=c("Oxytocin", "Placebo"))))
-  expect_that(unique(data$kobe$Treatment[data$kobe$Subject == 145 & data$kobe$Session == 2]),
+  expect_that(unique(data.2$ucsb$Treatment[data.2$ucsb$Subject == 82 & data.2$ucsb$Session == 2]),
               equals(factor("Placebo", levels=c("Oxytocin", "Placebo"))))
 
-  expect_that(unique(data$ucsb$Ethnicity[data$ucsb$Subject == 10]),
+  expect_that(unique(data.2$kobe$Treatment[data.2$kobe$Subject == 101 & data.2$kobe$Session == 1]),
+              equals(factor("Placebo", levels=c("Oxytocin", "Placebo"))))
+  expect_that(unique(data.2$kobe$Treatment[data.2$kobe$Subject == 101 & data.2$kobe$Session == 2]),
+              equals(factor("Oxytocin", levels=c("Oxytocin", "Placebo"))))
+  expect_that(unique(data.2$kobe$Treatment[data.2$kobe$Subject == 145 & data.2$kobe$Session == 1]),
+              equals(factor("Oxytocin", levels=c("Oxytocin", "Placebo"))))
+  expect_that(unique(data.2$kobe$Treatment[data.2$kobe$Subject == 145 & data.2$kobe$Session == 2]),
+              equals(factor("Placebo", levels=c("Oxytocin", "Placebo"))))
+
+  expect_that(unique(data.2$ucsb$Ethnicity[data.2$ucsb$Subject == 10]),
               equals(factor("European American", levels=c("Asian American", "European American", "Japanese"))))
-  expect_that(unique(data$ucsb$Ethnicity[data$ucsb$Subject == 82]),
+  expect_that(unique(data.2$ucsb$Ethnicity[data.2$ucsb$Subject == 82]),
               equals(factor("Asian American", levels=c("Asian American", "European American", "Japanese"))))
 
-  expect_that(unique(data$kobe$Ethnicity[data$kobe$Subject == 101]),
+  expect_that(unique(data.2$kobe$Ethnicity[data.2$kobe$Subject == 101]),
               equals(factor("Japanese", levels=c("Asian American", "European American", "Japanese"))))
 
 })
 
 
-test_that("rejectOutliers rejects outliers, and only outliers", {
-
-  inp.data <- selectData(kobe.file.1="../Data/Kobe-Social-Cue-1/case_data.csv",
-                         kobe.file.2="../Data/Kobe-Social-Cue-2/case_data.csv",
-                         ucsb.file.1="../Data/UCSB-Social-Cue-1/case_data.csv",
-                         ucsb.file.2="../Data/UCSB-Social-Cue-2/case_data.csv")
-  inp.data <- assignFactors(inp.data,
-                            fact.file="../Data/treatment-ethnicity.csv")
-
-  out.data <- rejectOutliers(inp.data)
+test_that("rejectOutliers returns a value without outliers", {
 
   threshold <- 100
   
-  expect_that("catch" %in% out.data$kobe$TrialType, equals(FALSE))
-  expect_that(sum(out.data$kobe$Latency < threshold), equals(0))
-  expect_that(sum(out.data$kobe$Latency > 3.0 * sd(inp.data$kobe$Latency, na.rm=TRUE)), equals(0))
+  expect_that("catch" %in% data.3$kobe$TrialType, equals(FALSE))
+  expect_that(sum(data.3$kobe$Latency < threshold), equals(0))
+  expect_that(sum(data.3$kobe$Latency > 3.0 * sd(data.2$kobe$Latency, na.rm=TRUE)), equals(0))
   
-  expect_that(sum(out.data$ucsb$CueSlide.RT > 0), equals(0))
-  expect_that(sum(out.data$ucsb$TargetSlide.RT < threshold), equals(0))
-  expect_that(sum(out.data$ucsb$TargetSlide.RT > 3.0 * sd(inp.data$ucsb$TargetSlide.RT, na.rm=TRUE)), equals(0))
+  expect_that(sum(data.3$ucsb$CueSlide.RT > 0), equals(0))
+  expect_that(sum(data.3$ucsb$TargetSlide.RT < threshold), equals(0))
+  expect_that(sum(data.3$ucsb$TargetSlide.RT > 3.0 * sd(data.2$ucsb$TargetSlide.RT, na.rm=TRUE)), equals(0))
 
 })
 
@@ -246,18 +242,11 @@ test_that("getBinIdx gets bin indexes by named intervals", {
 
 })
 
-test_that("computeSubjecMean computes the subject mean for one case", {
+test_that("computeSubjectMean computes the subject mean for one case", {
 
-  data <- selectData(kobe.file.1="../Data/Kobe-Social-Cue-1/case_data.csv",
-                     kobe.file.2="../Data/Kobe-Social-Cue-2/case_data.csv",
-                     ucsb.file.1="../Data/UCSB-Social-Cue-1/case_data.csv",
-                     ucsb.file.2="../Data/UCSB-Social-Cue-2/case_data.csv")
-  data <- assignFactors(data,
-                        fact.file="../Data/treatment-ethnicity.csv")
-
-  subject.mean <- computeSubjectMean(data$kobe, 1, "Oxytocin", "200")
+  subject.mean <- computeSubjectMean(data.2$kobe, "200", "Oxytocin", 1)
           
-  ## ./4-RStudio/Eye-Tracking-Analysis/Data/Kobe-Social-Cue-1/test_computeSubjectMean.xlsx
+  ## ./Eye-Tracking-Analysis/Data/Kobe-Social-Cue-1/test_computeSubjectMean.xlsx
   expect_that(subject.mean$Subject, equals(1))
   expect_that(subject.mean$Treatment,
               equals(factor("Oxytocin", levels=c("Oxytocin"))))
@@ -274,23 +263,36 @@ test_that("computeSubjecMean computes the subject mean for one case", {
 
 })
 
-test_that("computeSubjectMeans computes the subject means for UCSB", {
-
-  data <- selectData(kobe.file.1="../Data/Kobe-Social-Cue-1/case_data.csv",
-                     kobe.file.2="../Data/Kobe-Social-Cue-2/case_data.csv",
-                     ucsb.file.1="../Data/UCSB-Social-Cue-1/case_data.csv",
-                     ucsb.file.2="../Data/UCSB-Social-Cue-2/case_data.csv")
-  data <- assignFactors(data,
-                        fact.file="../Data/treatment-ethnicity.csv")
-  data <- rejectOutliers(data)
-
-  means <- list()
-  means$ucsb <- computeSubjectMeans(data$ucsb)
+test_that("computeSubjectMeans returns the expected columns and number of rows", {
 
   expect_that(names(means$ucsb),
-              equals(c("Subject", "Treatment", "Ethnicity", "Bin",
+              equals(c("Bin", "Ethnicity", "Treatment", "Subject",
                        "I.I", "C.C", "SCI.Matched", "I.C", "C.I",
                        "SCI.Unmatched")))
-  expect_that(length(means$ucsb$Subject), equals(6 * length(unique(data$ucsb$Subject))))
+  expect_that(length(means$ucsb$Subject), equals(6 * length(unique(data.3$ucsb$Subject))))
+
+})
+
+test_that("computeGrandMean computes the grand mean for one case", {
+
+  grand.mean <- computeGrandMean(rbind(means$kobe, means$ucsb), "200", "Asian American", "Oxytocin")
+
+  ## ./Eye-Tracking-Analysis/Data/means.subject.xlsx
+  expect_that(grand.mean$Bin,
+              equals(factor("200", levels=c("200"))))
+  expect_that(grand.mean$Ethnicity,
+              equals(factor("Asian American", levels=c("Asian American"))))
+  expect_that(grand.mean$Treatment,
+              equals(factor("Oxytocin", levels=c("Oxytocin"))))
+  expect_that(grand.mean$mean.SCI.Matched - 8.983463553, is_less_than(1.0e-06))
+  expect_that(grand.mean$mean.SCI.Unmatched - 5.177205929, is_less_than(1.0e-06))
+
+})
+
+test_that("computeGrandMeans returns the expected columns", {
+
+  expect_that(names(means$grand),
+              equals(c("Bin", "Ethnicity", "Treatment",
+                       "mean.SCI.Matched","mean.SCI.Unmatched")))
 
 })

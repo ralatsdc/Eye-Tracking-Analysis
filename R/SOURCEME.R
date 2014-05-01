@@ -11,8 +11,8 @@
 
 source('./R/EyeTrackingAnalysis.R')
 
-data <- selectData()
-data <- assignFactors(data)
-data <- rejectOutliers(data)
+data.1 <- selectData()
+data.2 <- assignFactors(data.1)
+data.3 <- rejectOutliers(data.2)
 
-means <- computeMeans(data)
+means <- computeMeans(data.3)

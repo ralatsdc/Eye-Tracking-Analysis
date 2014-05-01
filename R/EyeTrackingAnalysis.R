@@ -34,12 +34,74 @@ computeMeans <- function(data) {
   ## Compute the subject means for the UCSB data set
   means$ucsb <- computeSubjectMeans(data$ucsb)
 
+  ## Write the subject means
+  write.csv(rbind(means$kobe, means$ucsb), "means.subject.csv")
+
+  ## Compute the grand means for the combined Kobe and UCSB subject
+  ## means
+  means$grand <- computeGrandMeans(rbind(means$kobe, means$ucsb))
+
+  ## Write the grand means
+  write.csv(means$grand, "means.grand.csv")
+
   means
+}
+
+computeGrandMeans <- function(subject.means) {
+  ## Compute the grand mean SCI for the matched and unmatched
+  ## congruence cases for all bins, ethnicities, and treatments.
+
+  ## Initialize the return value
+  grand.means <- data.frame()
+
+  ## Assign named bins
+  bins <- c("200", "600", "1000")
+
+  ## Consider each bin
+  for (bin in bins) {
+        
+    ## Consider each unique ethnicity
+    for (ethnicity in unique(subject.means$Ethnicity)) {
+         
+      ## Consider each unique treatment
+      for (treatment in unique(subject.means$Treatment)) {
+
+        ## Collect all grand means for each bin, ethnicity, and
+        ## treatment
+        grand.means <- rbind(grand.means,
+                             computeGrandMean(subject.means, bin, ethnicity, treatment))
+      }
+    }
+  }
+  grand.means
+}
+
+computeGrandMean <- function(subject.means, bin, ethnicity, treatment) {
+  ## Compute the grand mean SCI for the matched and unmatched
+  ## congruence cases for a given bin, ethnicity, and treatment
+  
+  ## Initialize the return value
+  grand.mean <- data.frame()
+  
+  ## Identify the bin, ethnicity, and treatment
+  bin.idx <- subject.means$Bin == bin
+  ethnicity.idx <- subject.means$Ethnicity == ethnicity
+  treatment.idx <- subject.means$Treatment == treatment
+  subject.means.idx <- bin.idx & ethnicity.idx & treatment.idx
+
+  ## Compute the grand mean SCI for the matched and unmatched
+  ## congruence cases
+  mean.SCI.Matched <- mean(subject.means$SCI.Matched[subject.means.idx], na.rm=TRUE)
+  mean.SCI.Unmatched <- mean(subject.means$SCI.Unmatched[subject.means.idx], na.rm=TRUE)
+
+  ## Assemble the results as a data frame
+  grand.mean <- data.frame(Bin=bin, Ethnicity=ethnicity, Treatment=treatment,
+                           mean.SCI.Matched=mean.SCI.Matched, mean.SCI.Unmatched=mean.SCI.Unmatched)
 }
 
 computeSubjectMeans <- function(site.data) {
   ## Compute the mean Kobe Latency or UCSB TargetSlide.RT measurement
-  ## for all subjects, treatments, and bins.
+  ## for all bins, treatments, and subjects.
 
   ## Initialize the return value
   subject.means <- data.frame()
@@ -47,27 +109,27 @@ computeSubjectMeans <- function(site.data) {
   ## Assign named bins
   bins <- c("200", "600", "1000")
 
-  ## Consider each unique subject
-  for (subject in unique(site.data$Subject)) {
-
+  ## Consider each bin
+  for (bin in bins) {
+        
     ## Consider each unique treatment
     for (treatment in unique(site.data$Treatment)) {
 
-      ## Consider each bin
-      for (bin in bins) {
-        
+      ## Consider each unique subject
+      for (subject in unique(site.data$Subject)) {
+
         ## Collect all subject means for each bin, treatment, and subject
         subject.means <- rbind(subject.means,
-                               computeSubjectMean(site.data, subject, treatment, bin))
+                               computeSubjectMean(site.data, bin, treatment, subject))
       }
     }
   }
   subject.means
 }
 
-computeSubjectMean <- function(site.data, subject, treatment, bin) {
+computeSubjectMean <- function(site.data, bin, treatment, subject) {
   ## Compute the mean Kobe Latency or UCSB TargetSlide.RT measurement
-  ## for a given subject, treatment, and bin.
+  ## for a given bin, treatment, and subject.
   
   ## Initialize the return value
   subject.mean <- data.frame()
@@ -82,11 +144,11 @@ computeSubjectMean <- function(site.data, subject, treatment, bin) {
     return(subject.mean)
   }
 
-  ## Identify the subject, treatment, and bin
-  subject.idx <- site.data$Subject == subject
-  treatment.idx <- site.data$Treatment == treatment
+  ## Identify the bin, treatment, and subject
   bin.idx <- getBinIdx(site.data, bin)
-  site.data.idx <- subject.idx & treatment.idx & bin.idx
+  treatment.idx <- site.data$Treatment == treatment
+  subject.idx <- site.data$Subject == subject
+  site.data.idx <- bin.idx & treatment.idx & subject.idx
 
   ## Identify the ethnicity
   ethnicity <- site.data$Ethnicity[site.data.idx][1]
@@ -104,7 +166,7 @@ computeSubjectMean <- function(site.data, subject, treatment, bin) {
   c.i.mean <- mean(site.data[[measurement]][site.data.idx & c.i.idx], na.rm=TRUE)
   
   ## Assemble the results as a data frame
-  subject.mean <- data.frame(Subject=subject, Treatment=treatment, Ethnicity=ethnicity, Bin=bin,
+  subject.mean <- data.frame(Bin=bin, Ethnicity=ethnicity, Treatment=treatment, Subject=subject,
                              I.I=i.i.mean, C.C=c.c.mean, SCI.Matched=i.i.mean - c.c.mean,
                              I.C=i.c.mean, C.I=c.i.mean, SCI.Unmatched=i.c.mean - c.i.mean)
 }
