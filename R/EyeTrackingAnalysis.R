@@ -171,6 +171,56 @@ computeSubjectMean <- function(site.data, bin, treatment, subject) {
                              I.C=i.c.mean, C.I=c.i.mean, SCI.Unmatched=i.c.mean - c.i.mean)
 }
 
+createFactors <- function(data) {
+  ## Creates factors from integer Subject and Latency columns, integer
+  ## SOA or CueDur column by binning, and trial type columns by
+  ## combination.
+
+  ## data$kobe
+  data$kobe$Subject <- as.factor(data$kobe$Subject)
+  ## Session
+  ## TrialType
+
+  SOA <- vector(length=length(data$kobe$SOA))
+  bins <- c("200", "600", "1000")
+  for (bin in bins) {
+    SOA[getBinIdx(data$kobe, bin)] <- bin
+  }
+  data$kobe$SOA <- as.factor(SOA)
+  
+  data$kobe$Congruence <- as.factor(paste(data$kobe$TrialTypeFG, data$kobe$TrialTypeBG, sep="-"))
+
+  ## TrialTypeFG
+  ## TrialTypeBG
+  ## Latency
+  ## Treatment
+  ## Ethnicity
+
+  ## data$ucsb
+  data$ucsb$Subject <- as.factor(data$ucsb$Subject)
+  ## Session
+  ## TrialName
+  ## CueSlide.RT
+  ## CueDur
+
+  CueDur <- vector(length=length(data$ucsb$CueDur))
+  bins <- c("200", "600", "1000")
+  for (bin in bins) {
+    CueDur[getBinIdx(data$ucsb, bin)] <- bin
+  }
+  data$ucsb$CueDur <- as.factor(CueDur)
+
+  data$ucsb$Congruence <- as.factor(paste(data$ucsb$TrialTypeFG, data$ucsb$TrialTypeBG, sep="-"))
+
+  ## TrialTypeBG
+  ## TrialTypeFG
+  ## TargetSlide.RT
+  ## Treatment
+  ## Ethnicity
+
+  data
+}
+
 getBinIdx <- function(site.data, bin) {
   ## Get bin indexes by named intervals using the Kobe SOA and the
   ## UCSB CueDur measurements.
